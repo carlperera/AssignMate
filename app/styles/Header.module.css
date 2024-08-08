@@ -3,11 +3,13 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    color: black;
+    font-weight: bold;
+    color: purple;
 }
 
 .header nav a {
     margin-right: 15px;
     text-decoration: none;
+    font-weight: bold;
     color: purple;
 }
