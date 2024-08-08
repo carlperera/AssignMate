@@ -19,12 +19,14 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className={styles.container}>
-          <Header />
-          <main className={styles.main}>{children}</main>
-          <footer className={styles.footer}>
-            © 2024 AssignMate. All rights reserved.
-          </footer>
+        <div className={styles.pageWrapper}>
+          <div className={styles.container}>
+            <Header />
+            <main className={styles.main}>{children}</main>
+            <footer className={styles.footer}>
+              © 2024 AssignMate. All rights reserved.
+            </footer>
+          </div>
         </div>
       </body>
     </html>
