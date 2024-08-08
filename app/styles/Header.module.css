@@ -1,0 +1,13 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: black;
+}
+
+.header nav a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: purple;
+}
