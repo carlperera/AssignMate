@@ -1,4 +1,4 @@
-import TeamCard from '../components/Card'
+import Card from '../components/Card'
 import styles from '../styles/page.module.css'
 
 export default function Projects() {
@@ -12,7 +12,7 @@ export default function Projects() {
   return (
     <div className={styles.grid}>
       {teams.map(team => (
-        <TeamCard key={team.name} name={team.name} color={team.color} />
+        <Card key={team.name} name={team.name} color={team.color}/>
       ))}
     </div>
   )

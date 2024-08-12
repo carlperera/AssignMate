@@ -1,24 +1,23 @@
-"use client" // Renders this component on the client/frontend, not just on the server/backend.
+"use client"
 
 import React, { useState } from 'react';
 import Card from '../components/Card';
 import SidePanel from '../components/SidePanel';
+import AddTeamButton from '../components/AddTeamButton';
 import styles from '../styles/page.module.css';
 
 interface Team {
+  id: number;
   name: string;
   color: string;
-  // Add more team properties as needed
 }
 
 export default function Teams() {
+  const [teams, setTeams] = useState<Team[]>([
+    { id: 1, name: 'FIT3171 Team 2', color: '#ff9999' },
+    { id: 2, name: 'FIT3178 Team 5', color: '#ff99ff' },
+  ]);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-
-  const teams: Team[] = [
-    { name: 'FIT3171 Team 2', color: '#ff9999' },
-    { name: 'FIT3178 Team 5', color: '#ff99ff' },
-    { name: 'FIT3178 Team 5', color: '#ff99ff' }
-  ];
 
   const handleCardClick = (team: Team) => {
     setSelectedTeam(team);
@@ -28,12 +27,17 @@ export default function Teams() {
     setSelectedTeam(null);
   };
 
+  const handleAddTeam = (newTeam: { name: string; color: string }) => {
+    const newId = Math.max(...teams.map(t => t.id), 0) + 1;
+    setTeams([...teams, { ...newTeam, id: newId }]);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.grid}>
         {teams.map(team => (
           <Card 
-            key={team.name} 
+            key={team.id} 
             name={team.name} 
             color={team.color} 
             onClick={() => handleCardClick(team)}
@@ -41,6 +45,9 @@ export default function Teams() {
         ))}
       </div>
       <SidePanel team={selectedTeam} onClose={handleCloseSidePanel} />
+      <div className={styles.addButtonContainer}>
+        <AddTeamButton onAddTeam={handleAddTeam} />
+      </div>
     </div>
   );
 }

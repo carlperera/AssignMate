@@ -1,4 +1,4 @@
-'use client'; // notifies the frontend/client side to also render, not only backend
+'use client';
 
 import styles from '../styles/Header.module.css';
 import Link from 'next/link';
@@ -13,20 +13,18 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      <Link href="/" legacyBehavior>
-        <a>
-          <h1>AssignMate</h1>
-        </a>
+      <Link href="/">
+        <h1>AssignMate</h1>
       </Link>
       <nav className={styles.nav}>
-        <Link href="/teams" legacyBehavior>
-          <a className={isActive('/teams')}>Your Teams</a>
+        <Link href="/teams" className={isActive('/teams')}>
+          Your Teams
         </Link>
-        <Link href="/projects" legacyBehavior>
-          <a className={isActive('/projects')}>Your Projects</a>
+        <Link href="/projects" className={isActive('/projects')}>
+          Your Projects
         </Link>
-        <Link href="/tasks" legacyBehavior>
-          <a className={isActive('/tasks')}>Your Tasks</a>
+        <Link href="/tasks" className={isActive('/tasks')}>
+          Your Tasks
         </Link>
       </nav>
       <input type="search" placeholder="Search" />
