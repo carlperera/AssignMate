@@ -1,4 +1,4 @@
-export default function Projects() {
-    return <h1 style={{ color: 'black' }}>meowww</h1>;
+export default function Tasks() {
+    return <h1 style={{ color: 'black' }}>Tasks</h1>;
   }
   

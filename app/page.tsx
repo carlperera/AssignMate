@@ -1,3 +1,3 @@
 export default function Home() {
-  return <h1 style={{ color: 'black' }}>HOMEEEEEE</h1>;
+  return <h1 style={{ color: 'black' }}>HOME</h1>;
 }

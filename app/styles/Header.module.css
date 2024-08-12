@@ -3,13 +3,31 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    font-weight: bold;
-    color: purple;
+    color: black;
 }
 
-.header nav a {
-    margin-right: 15px;
+.nav {
+    display: flex;
+    gap: 15px;
+}
+
+.nav a {
     text-decoration: none;
-    font-weight: bold;
+    padding-bottom: 5px;
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.nav a.active {
     color: purple;
+    border-bottom-color: purple;
+}
+
+.nav a.inactive {
+    color: #888; /* Gray color for inactive links */
+}
+
+.nav a.inactive:hover {
+    color: #555; /* Darker gray on hover for inactive links */
+    border-bottom-color: #888; /* Light underline on hover */
 }

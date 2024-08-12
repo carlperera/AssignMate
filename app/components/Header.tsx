@@ -1,7 +1,16 @@
+'use client'; // notifies the frontend/client side to also render, not only backend
+
 import styles from '../styles/Header.module.css';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    return pathname === path ? styles.active : styles.inactive;
+  };
+
   return (
     <header className={styles.header}>
       <Link href="/" legacyBehavior>
@@ -9,15 +18,15 @@ export default function Header() {
           <h1>AssignMate</h1>
         </a>
       </Link>
-      <nav>
+      <nav className={styles.nav}>
         <Link href="/teams" legacyBehavior>
-          <a>Your Teams</a>
+          <a className={isActive('/teams')}>Your Teams</a>
         </Link>
         <Link href="/projects" legacyBehavior>
-          <a>Your Projects</a>
+          <a className={isActive('/projects')}>Your Projects</a>
         </Link>
         <Link href="/tasks" legacyBehavior>
-          <a>Your Tasks</a>
+          <a className={isActive('/tasks')}>Your Tasks</a>
         </Link>
       </nav>
       <input type="search" placeholder="Search" />

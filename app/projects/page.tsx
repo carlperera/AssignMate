@@ -1,4 +1,4 @@
-import TeamCard from '../components/TeamCard'
+import TeamCard from '../components/Card'
 import styles from '../styles/page.module.css'
 
 export default function Projects() {
