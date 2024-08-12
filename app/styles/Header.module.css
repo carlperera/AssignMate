@@ -11,3 +11,13 @@
     text-decoration: none;
     color: purple;
 }
+
+.header nav a:hover {
+    color: #6200ea;
+}
+
+.header nav a:active {
+    font-weight: bold;
+    color: #6200ea;
+}
+
