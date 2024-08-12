@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import Header from './components/Header';
-import Teams from './teams/page';
-import Projects from './projects/page';
-import Tasks from './tasks/page';
+import Teams from './pages/team-page';
+import Projects from './pages/project-page';
+import Tasks from './pages/task-page';
 import styles from "./styles/Layout.module.css";
 
 export default function Home() {

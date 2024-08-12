@@ -8,7 +8,6 @@ import styles from '../styles/page.module.css';
 interface Team {
   name: string;
   color: string;
-  // Add more team properties as needed
 }
 
 export default function Teams() {
