@@ -6,18 +6,28 @@
     color: black;
 }
 
-.header nav a {
-    margin-right: 15px;
+.nav {
+    display: flex;
+    gap: 15px;
+}
+
+.nav a {
     text-decoration: none;
+    padding-bottom: 5px;
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.nav a.active {
     color: purple;
+    border-bottom-color: purple;
 }
 
-.header nav a:hover {
-    color: #6200ea;
+.nav a.inactive {
+    color: #888; /* Gray color for inactive links */
 }
 
-.header nav a:active {
-    font-weight: bold;
-    color: #6200ea;
+.nav a.inactive:hover {
+    color: #555; /* Darker gray on hover for inactive links */
+    border-bottom-color: #888; /* Light underline on hover */
 }
-

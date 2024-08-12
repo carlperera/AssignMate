@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import "./styles/globals.css";
 import styles from "./styles/Layout.module.css";
 
@@ -23,9 +24,7 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
           <div className={styles.container}>
             <Header />
             <main className={styles.main}>{children}</main>
-            <footer className={styles.footer}>
-              © 2024 AssignMate. All rights reserved.
-            </footer>
+            <Footer />
           </div>
         </div>
       </body>

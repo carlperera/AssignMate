@@ -1,22 +1,49 @@
-"use client";
+'use client'; // notifies the frontend/client side to also render, not only backend
 
-import styles from '../styles/Header.module.css'
+import styles from '../styles/Header.module.css';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-interface HeaderProps {
-    setSelectedTab: (tab: string) => void;
-    selectedTab: string;
-}
+export default function Header() {
+  const pathname = usePathname();
 
-export default function Header({setSelectedTab, selectedTab}: HeaderProps) {
+  const isActive = (path: string) => {
+    return pathname === path ? styles.active : styles.inactive;
+  };
+
   return (
     <header className={styles.header}>
-      <h1>AssignMate</h1>
-      <nav>
-        <a href="#" onClick={() => setSelectedTab('teams')} className={selectedTab === 'teams' ? styles.active : ''}>Your Teams</a>
-        <a href="#" onClick={() => setSelectedTab('projects')} className={selectedTab === 'projects' ? styles.active : ''}>Your Projects</a>
-        <a href="#" onClick={() => setSelectedTab('tasks')} className={selectedTab === 'tasks' ? styles.active : ''}>All Tasks</a>
+      <Link href="/" legacyBehavior>
+        <a>
+          <h1>AssignMate</h1>
+        </a>
+      </Link>
+      <nav className={styles.nav}>
+        <Link href="/teams" legacyBehavior>
+          <a className={isActive('/teams')}>Your Teams</a>
+        </Link>
+        <Link href="/projects" legacyBehavior>
+          <a className={isActive('/projects')}>Your Projects</a>
+        </Link>
+        <Link href="/tasks" legacyBehavior>
+          <a className={isActive('/tasks')}>Your Tasks</a>
+        </Link>
       </nav>
       <input type="search" placeholder="Search" />
     </header>
-  )
+  );
+
+    //   interface HeaderProps {
+    //     setSelectedTab: (tab: string) => void;
+    //     selectedTab: string;
+    // }
+
+    // export default function Header({setSelectedTab, selectedTab}: HeaderProps) {
+    // return (
+    //     <header className={styles.header}>
+    //     <h1>AssignMate</h1>
+    //     <nav>
+    //         <a href="#" onClick={() => setSelectedTab('teams')} className={selectedTab === 'teams' ? styles.active : ''}>Your Teams</a>
+    //         <a href="#" onClick={() => setSelectedTab('projects')} className={selectedTab === 'projects' ? styles.active : ''}>Your Projects</a>
+    //         <a href="#" onClick={() => setSelectedTab('tasks')} className={selectedTab === 'tasks' ? styles.active : ''}>All Tasks</a>
 }
