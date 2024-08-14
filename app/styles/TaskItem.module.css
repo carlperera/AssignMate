@@ -1,0 +1,39 @@
+.taskItem {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.taskItem h3 {
+    color: black;
+}
+
+.taskItem:hover {
+    transform: translateY(-3px);
+}
+
+.name {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.tags {
+    margin-bottom: 5px;
+}
+
+.tag {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.description {
+    font-size: 1em;
+    color: #555;
+}
+
+
