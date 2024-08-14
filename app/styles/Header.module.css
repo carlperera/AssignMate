@@ -3,31 +3,37 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    color: black;
+    color: purple;
+    font-weight: bold;
 }
 
 .nav {
     display: flex;
-    gap: 15px;
+    gap: 40px;
 }
 
-.nav a {
+.nav span {
     text-decoration: none;
     padding-bottom: 5px;
     border-bottom: 3px solid transparent;
     transition: color 0.3s ease, border-bottom-color 0.3s ease;
+    cursor: pointer; 
 }
 
-.nav a.active {
+.nav span.active {
     color: purple;
     border-bottom-color: purple;
 }
 
-.nav a.inactive {
-    color: #888; /* Gray color for inactive links */
+.nav span.inactive {
+    color: #888; 
 }
 
-.nav a.inactive:hover {
-    color: #555; /* Darker gray on hover for inactive links */
-    border-bottom-color: #888; /* Light underline on hover */
+.nav span.inactive:hover {
+    color: #555; 
+    border-bottom-color: #888; 
+}
+
+.header h1 {
+    cursor: pointer;
 }

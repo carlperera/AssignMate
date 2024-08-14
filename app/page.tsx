@@ -1,13 +1,27 @@
-"use client";
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
+import Header from './components/Header';
+import Teams from './pages/team-page';
+import Projects from './pages/project-page';
+import Tasks from './pages/task-page';
 import Card from './components/Card'
-import styles from './styles/page.module.css'
 import TaskItem from './components/TaskItem'
-import Header from './components/Header'
-
+import styles from "./styles/Layout.module.css";
 
 export default function Home() {
-  return <h1 style={{ color: 'black' }}>HOME</h1>;
+  const [currentPage, setCurrentPage] = useState('/');
+
+  return (
+    <>
+      <Header setCurrentPage={setCurrentPage} />
+      <main className={styles.main}>
+        {currentPage === '/' && <h1>Welcome to AssignMate</h1>}
+        {currentPage === '/teams' && <Teams />}
+        {currentPage === '/projects' && <Projects />}
+        {currentPage === '/tasks' && <Tasks />}
+      </main>
+    </>
+  );
 }
 
