@@ -1,7 +1,7 @@
 .container {
     display: flex;
   }
-  
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -10,6 +10,8 @@
   flex-grow: 1;
 }
 
-.list {
+.projectName {
+  color: black;
+  font-weight: bold;
   
 }

@@ -27,7 +27,7 @@ export default function Tasks() {
     <div className={styles.pageContainer}>
       {tasksData.map((data, index) => (
         <div key={index}>
-          <h2>{data.project}</h2>
+          <h2 className={styles.projectName}>{data.project}</h2>
           <TaskList tasks={data.tasks} />
         </div>
       ))}
