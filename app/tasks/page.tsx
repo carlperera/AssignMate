@@ -1,3 +1,11 @@
+"use client";
+
+import React, { useState } from 'react';
+import Card from '../components/Card';
+import TaskItem from '../components/TaskItem';
+import SidePanel from '../components/SidePanel';
+import styles from '../styles/page.module.css';
+
 
 const tasksData = [
   { 
