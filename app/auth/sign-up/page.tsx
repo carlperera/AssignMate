@@ -1,7 +1,6 @@
 "use client"; // Add this directive at the top
 
-import { useRouter } from 'next/router'; // Import useRouter
-import supabase from './supabase/supabaseClient';
+import supabase from '../../supabase/supabaseClient';
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -18,34 +17,22 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
-function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        AssignMate
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function AuthPage() {
   
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const router = useRouter(); // Initialize the router
     event.preventDefault(); // Prevent form from submitting normally
 
     const data = new FormData(event.currentTarget);
     const email = data.get('email') as string;
     const password = data.get('password') as string;
 
+
     try {
-      const { data: signInData, error } = await supabase.auth.signInWithPassword({
+
+      const { data: signInData, error } = await supabase.auth.signUp({
         email,
         password,
       });
@@ -53,7 +40,6 @@ export default function AuthPage() {
       if (error) {
         console.error('Error signing in:', error.message);
         // Handle the error, e.g., show a message to the user
-        
         return;
       }
 
@@ -61,16 +47,15 @@ export default function AuthPage() {
 
       console.log('User signed in:', user);
       console.log('Session:', session);
-
-      // Handle successful sign-in
-      router.push('/auth/sign-up/')
-
+      // Handle successful sign-in, e.g., redirect the user or store the session
     } catch (err) {
       console.error('Unexpected error:', err);
       // Handle unexpected errors
     }
   };
-  
+
+  supabase.auth.sign
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -90,7 +75,7 @@ export default function AuthPage() {
             </Avatar> */}
             <Typography
               component="h1"
-              variant="h2"
+              variant="h3"
               sx={{
                 fontFamily: 'Rounded Mplus 1c, sans-serif', // Set the font family
                 textAlign: 'left', // Align text to the left
@@ -98,44 +83,39 @@ export default function AuthPage() {
                 width: '100%'
               }}
             >
-              AssignMate
-            </Typography>
-            <Typography
-              component="h1"
-              variant="subtitle1"
-              sx={{
-                fontFamily: 'Rounded Mplus 1c, sans-serif', // Set the font family
-                textAlign: 'left', // Align text to the left
-                color: 'grey',
-                width: '100%'
-              }}
-            >
-              A collaborative task management application for university students in group assessments backed and developed by university students
-            </Typography>
-
-            <Typography
-              component="h1"
-              variant="subtitle2"
-              sx={{
-                fontFamily: 'Rounded Mplus 1c, sans-serif', // Set the font family
-                textAlign: 'left', // Align text to the left
-                color: 'grey',
-                width: '100%'
-              }}
-            >
-              If you’re an existing user, welcome back.
-              If you’re new here, please sign up!
+              Sign Up
             </Typography>
             
+
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 required
                 fullWidth
+                id="firstName"
+                label="First Name"
+                name="firstName"
+                autoComplete="John Applebottoms"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                name="lastName"
+                autoComplete="John Applebottoms"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
                 id="email"
-                label="Email Address"
+                label="Email"
                 name="email"
-                autoComplete="email"
+                autoComplete="test@gmail.com"
                 autoFocus
               />
               <TextField
@@ -148,9 +128,15 @@ export default function AuthPage() {
                 id="password"
                 autoComplete="current-password"
               />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                id="confirmPassword"
+                autoComplete="current-password"
               />
               <Button
                 type="submit"
@@ -160,29 +146,8 @@ export default function AuthPage() {
               >
                 Sign In
               </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="/auth/sign-up/" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In
-              </Button>
-              <script src="https://accounts.google.com/gsi/client" async></script>
-
-              <Copyright sx={{ mt: 5 }} />
+              
+            
             </Box>
           </Box>
         </Grid>
