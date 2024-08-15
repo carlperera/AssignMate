@@ -10,13 +10,19 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.1",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "cross-env": "^7.0.3",
+    "lucide-react": "^0.427.0",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
-    "react-router-dom": "^6.26.0"
+    "react-router-dom": "^6.26.0",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@shadcn/ui": "^0.0.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
