@@ -13,11 +13,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^5.16.7",
     "@supabase/supabase-js": "^2.45.1",
-<<<<<<< HEAD
     "dotenv": "^16.4.5",
-=======
-    "cross-env": "^7.0.3",
->>>>>>> ef2fc8ff4afa00a9e3cfea09ff2c4e72febf8555
     "next": "14.2.5",
     "pg": "^8.12.0",
     "react": "^18",
