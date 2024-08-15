@@ -1,0 +1,17 @@
+.container {
+    display: flex;
+  }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.projectName {
+  color: black;
+  font-weight: bold;
+  
+}

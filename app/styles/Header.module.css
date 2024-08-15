@@ -1,0 +1,39 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: purple;
+    font-weight: bold;
+}
+
+.nav {
+    display: flex;
+    gap: 40px;
+}
+
+.nav span {
+    text-decoration: none;
+    padding-bottom: 5px;
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s ease, border-bottom-color 0.3s ease;
+    cursor: pointer; 
+}
+
+.nav span.active {
+    color: purple;
+    border-bottom-color: purple;
+}
+
+.nav span.inactive {
+    color: #888; 
+}
+
+.nav span.inactive:hover {
+    color: #555; 
+    border-bottom-color: #888; 
+}
+
+.header h1 {
+    cursor: pointer;
+}
