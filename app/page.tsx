@@ -1,5 +1,6 @@
 "use client"; // Add this directive at the top
 
+<<<<<<< HEAD
 import { useRouter } from 'next/router'; // Import useRouter
 import supabase from './supabase/supabaseClient';
 import React from 'react';
@@ -16,10 +17,20 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+=======
+import { useState } from 'react';
+import Header from './components/Header';
+import HomePage from './pages/home-page';
+import Teams from './pages/team-page';
+import Projects from './pages/project-page';
+import Tasks from './pages/task-page';
+import styles from "./styles/Layout.module.css";
+>>>>>>> origin/jaden-testing
 
 
 function Copyright(props: any) {
   return (
+<<<<<<< HEAD
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://mui.com/">
@@ -28,6 +39,17 @@ function Copyright(props: any) {
       {new Date().getFullYear()}
       {'.'}
     </Typography>
+=======
+    <>
+      <Header setCurrentPage={setCurrentPage} />
+      <main className={styles.main}>
+        {currentPage === '/' && <HomePage />}
+        {currentPage === '/teams' && <Teams />}
+        {currentPage === '/projects' && <Projects />}
+        {currentPage === '/tasks' && <Tasks />}
+      </main>
+    </>
+>>>>>>> origin/jaden-testing
   );
 }
 
