@@ -24,7 +24,6 @@ import Projects from './pages/project-page';
 import Tasks from './pages/task-page';
 import styles from "./styles/Layout.module.css";
 
-
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -43,7 +42,7 @@ const defaultTheme = createTheme();
 
 export default function AuthPage() {
   
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const HandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     const router = useRouter(); // Initialize the router
     event.preventDefault(); // Prevent form from submitting normally
 
@@ -134,7 +133,7 @@ export default function AuthPage() {
               If you’re new here, please sign up!
             </Typography>
             
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" noValidate onSubmit={HandleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 required

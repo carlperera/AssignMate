@@ -22,7 +22,7 @@ const defaultTheme = createTheme();
 
 export default function AuthPage() {
   
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const HandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form from submitting normally
 
     const data = new FormData(event.currentTarget);
@@ -54,7 +54,7 @@ export default function AuthPage() {
     }
   };
 
-  supabase.auth.sign
+
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -87,7 +87,7 @@ export default function AuthPage() {
             </Typography>
             
 
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" noValidate onSubmit={HandleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 required
