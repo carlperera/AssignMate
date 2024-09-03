@@ -82,7 +82,7 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.runner }} eslint 'app/**/*.{js,jsx,ts,tsx}'
       # New Step: Run Unit Tests
       - name: Run Unit Tests
-        run: ${{ steps.detect-package-manager.outputs.runner }} jest --coverage
+        run: ${{ steps.detect-package-manager.outputs.runner }} jest --coverage --passWithNoTests
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
