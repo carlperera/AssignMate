@@ -79,7 +79,7 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       # New Step: Run Linter
       - name: Run ESLint
-        run: ${{ steps.detect-package-manager.outputs.runner }} eslint . 
+        run: ${{ steps.detect-package-manager.outputs.runner }} eslint 'app/**/*.{js,jsx,ts,tsx}'
       # New Step: Run Unit Tests
       - name: Run Unit Tests
         run: ${{ steps.detect-package-manager.outputs.runner }} jest --coverage

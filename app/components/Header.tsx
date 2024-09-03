@@ -1,4 +1,5 @@
 'use client'; // tell Next.js that this is a Client Component
+import React from 'react';
 
 import { useState } from 'react';
 import styles from '../styles/Header.module.css';

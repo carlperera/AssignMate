@@ -1,4 +1,4 @@
-import supabase from '../supabase/supabaseClient';
+
 import React from 'react';
 import { Container, TextField, Button, Typography, Box } from '@mui/material';
 

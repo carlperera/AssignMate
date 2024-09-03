@@ -1,9 +1,8 @@
 "use client"; // Add this directive at the top
+import React from 'react';
 
 import { useRouter } from 'next/router'; // Import useRouter
 import supabase from './supabase/supabaseClient';
-import React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -13,18 +12,11 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
+import Typography, {TypographyProps} from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useState } from 'react';
-import Header from './components/Header';
-import HomePage from './pages/home-page';
-import Teams from './pages/team-page';
-import Projects from './pages/project-page';
-import Tasks from './pages/task-page';
-import styles from "./styles/Layout.module.css";
 
-function Copyright(props: any) {
+
+function Copyright(props: TypographyProps) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
