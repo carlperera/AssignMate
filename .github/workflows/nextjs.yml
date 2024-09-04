@@ -85,6 +85,8 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.runner }} jest --coverage --passWithNoTests
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        env:
+          FIRE_CREDS: ${{ secrets.FIRE_CREDS }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
