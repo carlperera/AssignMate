@@ -1,79 +1,49 @@
-'use client'; // tell Next.js that this is a Client Component
-import React from 'react';
+'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import styles from '../styles/Header.module.css';
 
-// interface for the Header component
-interface HeaderProps {
-  setCurrentPage?: (page: string) => void; // update current page
-}
+export default function Header() {
+  const [activePage, setActivePage] = useState('/home-page');
 
-// Header component
-export default function Header({ setCurrentPage }: HeaderProps) {
-  // State to keep track of the active page
-  const [activePage, setActivePage] = useState<string>('/');
-
-  // handle navigation clicks
-  const handleNavClick = (page: string) => {
-    setActivePage(page); // Update the local state
-    if (setCurrentPage) {
-      setCurrentPage(page); // Update the parent component's state 
-    }
-  };
-
-  // determine if a nav item is active
   const isActive = (path: string): string => {
     return activePage === path ? styles.active : styles.inactive;
   };
 
-  // Render the header
+  const handleNavClick = (path: string) => {
+    setActivePage(path);
+  };
+
   return (
     <header className={styles.header}>
-      {/* Logo/Home link */}
-      <h1 onClick={() => handleNavClick('/')}>AssignMate</h1>
-      
-      {/* Navigation menu */}
+      <Link href="/home-page" onClick={() => handleNavClick('/home-page')}>
+        <h1>AssignMate</h1>
+      </Link>
       <nav className={styles.nav}>
-        {/* Teams nav item */}
-        <span 
-          className={isActive('/teams')} 
-          onClick={() => handleNavClick('/teams')}
+        <Link 
+          href="/home-page" 
+          className={isActive('/home-page')}
+          onClick={() => handleNavClick('/home-page')}
         >
-          Your Teams
-        </span>
-        {/* Projects nav item */}
-        <span 
-          className={isActive('/projects')} 
+          Dashboard
+        </Link>
+        <Link 
+          href="/projects" 
+          className={isActive('/projects')}
           onClick={() => handleNavClick('/projects')}
         >
-          Your Projects
-        </span>
-        {/* Tasks nav item */}
-        <span 
-          className={isActive('/tasks')} 
-          onClick={() => handleNavClick('/tasks')}
+          Projects
+        </Link>
+        <Link 
+          href="/tasks-page" 
+          className={isActive('/tasks-page')}
+          onClick={() => handleNavClick('/tasks-page')}
         >
-          Your Tasks
-        </span>
+          Tasks
+        </Link>
       </nav>
-      
-      {/* Search input */}
       <input type="search" placeholder="Search" />
     </header>
   );
-
-    //   interface HeaderProps {
-    //     setSelectedTab: (tab: string) => void;
-    //     selectedTab: string;
-    // }
-
-    // export default function Header({setSelectedTab, selectedTab}: HeaderProps) {
-    // return (
-    //     <header className={styles.header}>
-    //     <h1>AssignMate</h1>
-    //     <nav>
-    //         <a href="#" onClick={() => setSelectedTab('teams')} className={selectedTab === 'teams' ? styles.active : ''}>Your Teams</a>
-    //         <a href="#" onClick={() => setSelectedTab('projects')} className={selectedTab === 'projects' ? styles.active : ''}>Your Projects</a>
-    //         <a href="#" onClick={() => setSelectedTab('tasks')} className={selectedTab === 'tasks' ? styles.active : ''}>All Tasks</a>
 }
