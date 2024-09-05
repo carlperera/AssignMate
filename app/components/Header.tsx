@@ -1,49 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import styles from '../styles/Header.module.css';
 
 export default function Header() {
-  const [activePage, setActivePage] = useState('/home-page');
+  const pathname = usePathname();
 
   const isActive = (path: string): string => {
-    return activePage === path ? styles.active : styles.inactive;
-  };
-
-  const handleNavClick = (path: string) => {
-    setActivePage(path);
+    return pathname === path ? styles.active : '';
   };
 
   return (
     <header className={styles.header}>
-      <Link href="/home-page" onClick={() => handleNavClick('/home-page')}>
+      <Link href="/home-page">
         <h1>AssignMate</h1>
       </Link>
       <nav className={styles.nav}>
         <Link 
           href="/home-page" 
           className={isActive('/home-page')}
-          onClick={() => handleNavClick('/home-page')}
         >
-          Dashboard
+          Home
         </Link>
         <Link 
-          href="/projects" 
-          className={isActive('/projects')}
-          onClick={() => handleNavClick('/projects')}
+          href="/projects-page" 
+          className={isActive('/projects-page')}
         >
           Projects
         </Link>
         <Link 
           href="/tasks-page" 
           className={isActive('/tasks-page')}
-          onClick={() => handleNavClick('/tasks-page')}
         >
           Tasks
         </Link>
       </nav>
-      <input type="search" placeholder="Search" />
+      <input type="search" placeholder="Search" className={styles.searchInput} />
     </header>
   );
 }
