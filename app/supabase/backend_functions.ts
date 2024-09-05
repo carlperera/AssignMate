@@ -1,44 +1,11 @@
-import { User } from "@supabase/supabase-js";
-import supabase  from "./supabaseClient";
+// import supabase  from "./supabaseClient";
+// import {Team} from "database.types.ts";
+// /*
+//  1. fetch all teams
+//  2. fetch all projects
+//  2. fetch all projects for a specific team
+//  3. fetch all members/users for a specific team 
+//  4. fetch all tasks for a specific team 
+//  5. fetch all 
 
-
-
-const fetchAllTeams = async (): Promise<{ data: [] | null; error: any }> => {
-    const { data, error } = await supabase
-        .from('team')
-        .select('*');
-
-    return { data, error };
-};
-
-
-/* 
-
-
-
-
-*/
-// const fetchAllTeams = async (): Promise<{ data: Team[] | null; error: any }> => {
-//     const { data, error } = await supabase
-//         .from('team')
-//         .select('*');
-
-//     return { data, error };
-// };
-
-
-
-// const fetch = async () => {
-//     const { data, error } = await supabase
-//         .from('team')
-//         .select('*');
-    
-// }
-
-const addNewUser = async (user: User): Promise<{ data: User | null; error: any }> => {
-    const {error } = await supabase
-    .from('user')
-      .insert([user]);
-  
-    return { data: data ? data[0] : null, error }; // Return the first user or null if no data
-  };
+// */

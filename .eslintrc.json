@@ -1,3 +1,25 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect" // Automatically detects the React version
+    }
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    // Your rules here
+    "react/react-in-jsx-scope": "off", // Disable this rule for React 17+
+    "@typescript-eslint/no-explicit-any": "error" // Enforce type safety
+  }
 }

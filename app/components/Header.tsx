@@ -1,67 +1,49 @@
-'use client'; // notifies the frontend/client side to also render, not only backend
+'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import styles from '../styles/Header.module.css';
 
-// interface for the Header component
-interface HeaderProps {
-  setCurrentPage?: (page: string) => void; // update current page
-}
+export default function Header() {
+  const [activePage, setActivePage] = useState('/home-page');
 
-// Header component
-export default function Header({ setCurrentPage }: HeaderProps) {
-  // State to keep track of the active page
-  const [activePage, setActivePage] = useState<string>('/');
-
-  // handle navigation clicks
-  const handleNavClick = (page: string) => {
-    setActivePage(page); // Update the local state
-    if (setCurrentPage) {
-      setCurrentPage(page); // Update the parent component's state 
-    }
-  };
-
-  // determine if a nav item is active
   const isActive = (path: string): string => {
     return activePage === path ? styles.active : styles.inactive;
   };
 
-  // Render the header
+  const handleNavClick = (path: string) => {
+    setActivePage(path);
+  };
+
   return (
     <header className={styles.header}>
-      <Link href="/" legacyBehavior>
-        <a>
-          <h1>AssignMate</h1>
-        </a>
+      <Link href="/home-page" onClick={() => handleNavClick('/home-page')}>
+        <h1>AssignMate</h1>
       </Link>
       <nav className={styles.nav}>
-        <Link href="/teams" legacyBehavior>
-          <a className={isActive('/teams')}>Your Teams</a>
+        <Link 
+          href="/home-page" 
+          className={isActive('/home-page')}
+          onClick={() => handleNavClick('/home-page')}
+        >
+          Dashboard
         </Link>
-        <Link href="/projects" legacyBehavior>
-          <a className={isActive('/projects')}>Your Projects</a>
+        <Link 
+          href="/projects" 
+          className={isActive('/projects')}
+          onClick={() => handleNavClick('/projects')}
+        >
+          Projects
         </Link>
-        <Link href="/tasks" legacyBehavior>
-          <a className={isActive('/tasks')}>Your Tasks</a>
+        <Link 
+          href="/tasks-page" 
+          className={isActive('/tasks-page')}
+          onClick={() => handleNavClick('/tasks-page')}
+        >
+          Tasks
         </Link>
       </nav>
-      
-      {/* Search input */}
       <input type="search" placeholder="Search" />
     </header>
   );
-
-    //   interface HeaderProps {
-    //     setSelectedTab: (tab: string) => void;
-    //     selectedTab: string;
-    // }
-
-    // export default function Header({setSelectedTab, selectedTab}: HeaderProps) {
-    // return (
-    //     <header className={styles.header}>
-    //     <h1>AssignMate</h1>
-    //     <nav>
-    //         <a href="#" onClick={() => setSelectedTab('teams')} className={selectedTab === 'teams' ? styles.active : ''}>Your Teams</a>
-    //         <a href="#" onClick={() => setSelectedTab('projects')} className={selectedTab === 'projects' ? styles.active : ''}>Your Projects</a>
-    //         <a href="#" onClick={() => setSelectedTab('tasks')} className={selectedTab === 'tasks' ? styles.active : ''}>All Tasks</a>
 }

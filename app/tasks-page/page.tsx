@@ -3,6 +3,7 @@
 import React from 'react';
 import TaskList from '../components/TaskList';
 import styles from '../styles/page.module.css';
+import Header from '../components/Header';
 
 const tasksData = [
   { 
@@ -25,6 +26,7 @@ const tasksData = [
 export default function Tasks() {
   return (
     <div className={styles.pageContainer}>
+      <Header />
       {tasksData.map((data, index) => (
         <div key={index}>
           <h2 className={styles.projectName}>{data.project}</h2>
