@@ -1,6 +1,6 @@
 import { ClientKanbanWrapper } from '../components/ClientKanbanWrapper';
 
-const mockData = {
+const initialData = {
   todo: {
     title: 'To Do',
     tasks: [
@@ -26,7 +26,7 @@ export default function BoardTabPage() {
   return (
     <div>
       <h1>Board Tab</h1>
-      <ClientKanbanWrapper data={mockData} />
+      <ClientKanbanWrapper initialData={initialData} />
     </div>
   );
 }

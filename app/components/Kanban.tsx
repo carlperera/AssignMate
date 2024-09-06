@@ -3,20 +3,24 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
-interface KanbanData {
-  [columnId: string]: {
-    title: string;
-    tasks: Array<{
-      id: string;
-      title: string;
-      tag: string;
-      assignee?: string;
-    }>;
-  };
+interface Task {
+  id: string;
+  title: string;
+  tag: string;
+  assignee?: string;
+}
+
+interface Column {
+  title: string;
+  tasks: Task[];
+}
+
+interface BoardData {
+  [key: string]: Column;
 }
 
 interface KanbanProps {
-  data: KanbanData;
+  data: BoardData;
   onDragEnd: (result: DropResult) => void;
 }
 
