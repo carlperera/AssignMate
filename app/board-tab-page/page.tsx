@@ -8,29 +8,35 @@ const initialData: BoardData = {
         id: 'cp',
         name: 'Carl Perera',
         tasks: [
-          { id: '1', title: 'Task 1', tag: 'feature', assignee: 'cp' },
+          { id: '1', title: 'Implement user authentication', tag: 'feature', assignee: 'cp' },
+          { id: '2', title: 'Design landing page', tag: 'design', assignee: 'cp' },
         ],
       },
       {
         id: 'pf',
         name: 'Patrick Fitzgerald',
         tasks: [
-          { id: '2', title: 'Task 2', tag: 'bug', assignee: 'pf' },
+          { id: '3', title: 'Set up CI/CD pipeline', tag: 'devops', assignee: 'pf' },
         ],
       },
       {
         id: 'jm',
         name: 'Jaden Mu',
-        tasks: [],
+        tasks: [
+          { id: '4', title: 'Create API documentation', tag: 'documentation', assignee: 'jm' },
+        ],
       },
       {
         id: 'kt',
         name: 'Kevin Tran',
-        tasks: [],
+        tasks: [
+          { id: '5', title: 'Optimize database queries', tag: 'performance', assignee: 'kt' },
+        ],
       },
     ],
     unassignedTasks: [
-      { id: '3', title: 'Task 3', tag: 'improvement', assignee: null },
+      { id: '6', title: 'Write unit tests', tag: 'testing', assignee: null },
+      { id: '7', title: 'Research new technologies', tag: 'research', assignee: null },
     ],
   },
   inProgress: {
@@ -40,23 +46,29 @@ const initialData: BoardData = {
         id: 'cp',
         name: 'Carl Perera',
         tasks: [
-          { id: '4', title: 'Task 4', tag: 'feature', assignee: 'cp' },
+          { id: '8', title: 'Refactor codebase', tag: 'maintenance', assignee: 'cp' },
         ],
       },
       {
         id: 'pf',
         name: 'Patrick Fitzgerald',
-        tasks: [],
+        tasks: [
+          { id: '9', title: 'Implement real-time notifications', tag: 'feature', assignee: 'pf' },
+        ],
       },
       {
         id: 'jm',
         name: 'Jaden Mu',
-        tasks: [],
+        tasks: [
+          { id: '10', title: 'Create user onboarding flow', tag: 'ux', assignee: 'jm' },
+        ],
       },
       {
         id: 'kt',
         name: 'Kevin Tran',
-        tasks: [],
+        tasks: [
+          { id: '11', title: 'Integrate third-party API', tag: 'integration', assignee: 'kt' },
+        ],
       },
     ],
     unassignedTasks: [],
@@ -67,22 +79,30 @@ const initialData: BoardData = {
       {
         id: 'cp',
         name: 'Carl Perera',
-        tasks: [],
+        tasks: [
+          { id: '12', title: 'Set up project repository', tag: 'setup', assignee: 'cp' },
+        ],
       },
       {
         id: 'pf',
         name: 'Patrick Fitzgerald',
-        tasks: [],
+        tasks: [
+          { id: '13', title: 'Create database schema', tag: 'database', assignee: 'pf' },
+        ],
       },
       {
         id: 'jm',
         name: 'Jaden Mu',
-        tasks: [],
+        tasks: [
+          { id: '14', title: 'Design system architecture', tag: 'architecture', assignee: 'jm' },
+        ],
       },
       {
         id: 'kt',
         name: 'Kevin Tran',
-        tasks: [],
+        tasks: [
+          { id: '15', title: 'Set up development environment', tag: 'setup', assignee: 'kt' },
+        ],
       },
     ],
     unassignedTasks: [],
