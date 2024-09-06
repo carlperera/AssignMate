@@ -18,6 +18,16 @@ const initialData: BoardData = {
           { id: '2', title: 'Task 2', tag: 'bug', assignee: 'pf' },
         ],
       },
+      {
+        id: 'jm',
+        name: 'Jaden Mu',
+        tasks: [],
+      },
+      {
+        id: 'kt',
+        name: 'Kevin Tran',
+        tasks: [],
+      },
     ],
     unassignedTasks: [
       { id: '3', title: 'Task 3', tag: 'improvement', assignee: null },
@@ -33,23 +43,56 @@ const initialData: BoardData = {
           { id: '4', title: 'Task 4', tag: 'feature', assignee: 'cp' },
         ],
       },
+      {
+        id: 'pf',
+        name: 'Patrick Fitzgerald',
+        tasks: [],
+      },
+      {
+        id: 'jm',
+        name: 'Jaden Mu',
+        tasks: [],
+      },
+      {
+        id: 'kt',
+        name: 'Kevin Tran',
+        tasks: [],
+      },
     ],
     unassignedTasks: [],
   },
   done: {
     title: 'Done',
-    teamMembers: [],
+    teamMembers: [
+      {
+        id: 'cp',
+        name: 'Carl Perera',
+        tasks: [],
+      },
+      {
+        id: 'pf',
+        name: 'Patrick Fitzgerald',
+        tasks: [],
+      },
+      {
+        id: 'jm',
+        name: 'Jaden Mu',
+        tasks: [],
+      },
+      {
+        id: 'kt',
+        name: 'Kevin Tran',
+        tasks: [],
+      },
+    ],
     unassignedTasks: [],
   },
 };
 
 export default function BoardTabPage() {
   return (
-    <div className="h-screen p-4">
-      <h1 className="text-2xl font-bold mb-4">Board Tab</h1>
-      <div className="h-[calc(100vh-100px)]">
-        <ClientKanbanWrapper initialData={initialData} />
-      </div>
+    <div className="h-screen">
+      <ClientKanbanWrapper initialData={initialData} />
     </div>
   );
 }
