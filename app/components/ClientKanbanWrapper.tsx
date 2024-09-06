@@ -4,19 +4,26 @@ import React, { useState } from 'react';
 import { KanbanBoard } from './Kanban';
 import { DropResult } from '@hello-pangea/dnd';
 
-interface Task {
+export interface Task {
   id: string;
   title: string;
   tag: string;
-  assignee?: string;
+  assignee: string | null;
 }
 
-interface Column {
-  title: string;
+export interface TeamMember {
+  id: string;
+  name: string;
   tasks: Task[];
 }
 
-interface BoardData {
+export interface Column {
+  title: string;
+  teamMembers: TeamMember[];
+  unassignedTasks: Task[];
+}
+
+export interface BoardData {
   [key: string]: Column;
 }
 
@@ -30,33 +37,32 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
 
-    // If there's no destination, we don't need to do anything
     if (!destination) return;
 
-    // If the source and destination are the same, we don't need to do anything
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
+    const [sourceColumnId, sourceTeamId] = source.droppableId.split('-');
+    const [destColumnId, destTeamId] = destination.droppableId.split('-');
 
-    // Make a copy of the source column
-    const sourceColumn = {...boardData[source.droppableId]};
-    // Make a copy of the destination column
-    const destColumn = {...boardData[destination.droppableId]};
-    // Remove the task from the source column
-    const [movedTask] = sourceColumn.tasks.splice(source.index, 1);
-    // Insert the task into the destination column
-    destColumn.tasks.splice(destination.index, 0, movedTask);
+    const newBoardData = { ...boardData };
 
-    // Update the state with the new data
-    setBoardData({
-      ...boardData,
-      [source.droppableId]: sourceColumn,
-      [destination.droppableId]: destColumn,
-    });
+    // Helper function to get task array based on column and team ID
+    const getTaskArray = (columnId: string, teamId: string) => {
+      if (teamId === 'unassigned') {
+        return newBoardData[columnId].unassignedTasks;
+      }
+      return newBoardData[columnId].teamMembers.find(m => m.id === teamId)!.tasks;
+    };
+
+    // Remove task from source
+    const sourceTaskArray = getTaskArray(sourceColumnId, sourceTeamId);
+    const [movedTask] = sourceTaskArray.splice(source.index, 1);
+
+    // Add task to destination
+    const destTaskArray = getTaskArray(destColumnId, destTeamId);
+    destTaskArray.splice(destination.index, 0, { ...movedTask, assignee: destTeamId === 'unassigned' ? null : destTeamId });
+
+    setBoardData(newBoardData);
   };
 
   return <KanbanBoard data={boardData} onDragEnd={handleDragEnd} />;
 };
+
