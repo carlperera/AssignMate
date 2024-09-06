@@ -3,14 +3,16 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { BoardData, Column, Task, TeamMember } from './ClientKanbanWrapper';
+import { Underdog } from 'next/font/google';
 
 interface KanbanProps {
   data: BoardData;
   onDragEnd: (result: DropResult) => void;
   onAddNewTask: (columnId: string, task: Task) => void;
+  onDeleteTask: (columnId: string, taskId: string) => void;
 }
 
-export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTask }) => {
+export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTask, onDeleteTask }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTaskColumn, setNewTaskColumn] = useState('');
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -26,28 +28,53 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
   };
 
   const handleSubmitNewTask = () => {
-    if (newTaskTitle && newTaskTag) {
+    if (newTaskTitle) {
       const newTask: Task = {
         id: Date.now().toString(),
         title: newTaskTitle,
-        tag: newTaskTag,
+        tag: newTaskTag || undefined,
         assignee: null
       };
       onAddNewTask(newTaskColumn, newTask);
       setIsModalOpen(false);
       setNewTaskTitle('');
       setNewTaskTag('');
+      setNewTaskColumn('');
     }
   };
 
+  const TaskCard = ({ task, columnId, index }: { task: Task; columnId: string; index: number }) => (
+    <Draggable key={task.id} draggableId={task.id} index={index}>
+      {(provided) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className="bg-white p-2 mb-2 rounded shadow relative"
+        >
+          <h4 className="font-semibold">{task.title}</h4>
+          {task.tag && <div className="text-sm text-gray-600">{task.tag}</div>}
+          <button
+            onClick={() => onDeleteTask(columnId, task.id)}
+            className="absolute top-1 right-1 text-red-500 hover:text-red-700"
+          >
+            ×
+          </button>
+        </div>
+      )}
+    </Draggable>
+  );
+
+
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen"> {/* header and navigation */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-gray-900">AssignMate</h1>
         </div>
       </header>
-      <nav className="bg-white border-b border-gray-200">
+      <nav className="bg-white border-b border-gray-200"> 
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
@@ -58,7 +85,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
           </div>
         </div>
       </nav>
-      <div className="flex-grow flex overflow-hidden">
+      <div className="flex-grow flex overflow-hidden"> {/* sidebar */}
         <aside className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
           <div className="p-4 space-y-2">
             <button className="w-full text-left py-2 px-4 bg-purple-100 text-purple-700 rounded">Timeline</button>
@@ -96,19 +123,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
                                 className="bg-white p-2 rounded mt-1"
                               >
                                 {member.tasks.map((task, index) => (
-                                  <Draggable key={task.id} draggableId={task.id} index={index}>
-                                    {(provided) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        className="bg-white p-2 mb-2 rounded shadow"
-                                      >
-                                        <h4 className="font-semibold">{task.title}</h4>
-                                        <div className="text-sm text-gray-600">{task.tag}</div>
-                                      </div>
-                                    )}
-                                  </Draggable>
+                                  <TaskCard key={task.id} task={task} columnId={columnId} index={index} />
                                 ))}
                                 {provided.placeholder}
                               </div>
@@ -126,26 +141,17 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
                         >
                           <h3 className="font-semibold mb-2">Unassigned</h3>
                           {column.unassignedTasks.map((task, index) => (
-                            <Draggable key={task.id} draggableId={task.id} index={index}>
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className="bg-white p-2 mb-2 rounded shadow"
-                                >
-                                  <h4 className="font-semibold">{task.title}</h4>
-                                  <div className="text-sm text-gray-600">{task.tag}</div>
-                                </div>
-                              )}
-                            </Draggable>
+                            <TaskCard key={task.id} task={task} columnId={columnId} index={index} />
                           ))}
                           {provided.placeholder}
                         </div>
                       )}
                     </Droppable>
                   </div>
-                  <button className="mt-2 w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700" onClick={() => handleAddNewTask(columnId)}>
+                  <button 
+                    className="mt-2 w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+                    onClick={() => handleAddNewTask(columnId)}
+                  >
                     + Add New Task
                   </button>
                 </div>
@@ -167,7 +173,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
             />
             <input
               type="text"
-              placeholder="Task Tag"
+              placeholder="Task Tag (optional)"
               className="w-full p-2 mb-4 border rounded"
               value={newTaskTag}
               onChange={(e) => setNewTaskTag(e.target.value)}
@@ -181,7 +187,10 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
               </button>
               <button
                 className="px-4 py-2 bg-purple-600 text-white rounded"
-                onClick={handleSubmitNewTask}
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent any default form submission
+                  handleSubmitNewTask();
+                }}
               >
                 Add Task
               </button>

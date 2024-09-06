@@ -65,14 +65,44 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
 
   const addNewTask = (columnId: string, task: Task) => {
     setBoardData(prevData => {
+        const newData = { ...prevData };
+        // Check if the task already exists
+        const taskExists = newData[columnId].unassignedTasks.some(t => t.id === task.id);
+        if (!taskExists) {
+        newData[columnId].unassignedTasks.push(task);
+        }
+        return newData;
+    });
+  };
+
+
+  const deleteTask = (columnId: string, taskId: string) => {
+    setBoardData(prevData => {
       const newData = { ...prevData };
-      newData[columnId].unassignedTasks.push(task);
+      const column = newData[columnId];
+      
+      // Check unassigned tasks
+      const unassignedIndex = column.unassignedTasks.findIndex(task => task.id === taskId);
+      if (unassignedIndex !== -1) {
+        column.unassignedTasks.splice(unassignedIndex, 1);
+        return newData;
+      }
+
+      // Check team member tasks
+      for (const member of column.teamMembers) {
+        const taskIndex = member.tasks.findIndex(task => task.id === taskId);
+        if (taskIndex !== -1) {
+          member.tasks.splice(taskIndex, 1);
+          return newData;
+        }
+      }
+
       return newData;
     });
   };
 
 
 
-  return <KanbanBoard data={boardData} onDragEnd={handleDragEnd} onAddNewTask={addNewTask}  />;
+  return <KanbanBoard data={boardData} onDragEnd={handleDragEnd} onAddNewTask={addNewTask} onDeleteTask={deleteTask} />;
 };
 
