@@ -7,7 +7,7 @@ import { DropResult } from '@hello-pangea/dnd';
 export interface Task {
   id: string;
   title: string;
-  tag: string;
+  tag?: string;
   assignee: string | null;
 }
 
@@ -63,6 +63,16 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
     setBoardData(newBoardData);
   };
 
-  return <KanbanBoard data={boardData} onDragEnd={handleDragEnd} />;
+  const addNewTask = (columnId: string, task: Task) => {
+    setBoardData(prevData => {
+      const newData = { ...prevData };
+      newData[columnId].unassignedTasks.push(task);
+      return newData;
+    });
+  };
+
+
+
+  return <KanbanBoard data={boardData} onDragEnd={handleDragEnd} onAddNewTask={addNewTask}  />;
 };
 

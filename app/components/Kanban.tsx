@@ -7,12 +7,38 @@ import { BoardData, Column, Task, TeamMember } from './ClientKanbanWrapper';
 interface KanbanProps {
   data: BoardData;
   onDragEnd: (result: DropResult) => void;
+  onAddNewTask: (columnId: string, task: Task) => void;
 }
 
-export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd }) => {
+export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTask }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newTaskColumn, setNewTaskColumn] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskTag, setNewTaskTag] = useState('');
+
   const allTeamMembers = Array.from(new Set(
     Object.values(data).flatMap(column => column.teamMembers.map(member => member.id))
   ));
+
+  const handleAddNewTask = (columnId: string) => {
+    setNewTaskColumn(columnId);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmitNewTask = () => {
+    if (newTaskTitle && newTaskTag) {
+      const newTask: Task = {
+        id: Date.now().toString(),
+        title: newTaskTitle,
+        tag: newTaskTag,
+        assignee: null
+      };
+      onAddNewTask(newTaskColumn, newTask);
+      setIsModalOpen(false);
+      setNewTaskTitle('');
+      setNewTaskTag('');
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -119,7 +145,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd }) => {
                       )}
                     </Droppable>
                   </div>
-                  <button className="mt-2 w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700">
+                  <button className="mt-2 w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700" onClick={() => handleAddNewTask(columnId)}>
                     + Add New Task
                   </button>
                 </div>
@@ -128,6 +154,41 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd }) => {
           </DragDropContext>
         </main>
       </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <h3 className="text-lg font-bold mb-4">Add New Task</h3>
+            <input
+              type="text"
+              placeholder="Task Title"
+              className="w-full p-2 mb-4 border rounded"
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Task Tag"
+              className="w-full p-2 mb-4 border rounded"
+              value={newTaskTag}
+              onChange={(e) => setNewTaskTag(e.target.value)}
+            />
+            <div className="flex justify-end">
+              <button
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded mr-2"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-purple-600 text-white rounded"
+                onClick={handleSubmitNewTask}
+              >
+                Add Task
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
