@@ -1,8 +1,9 @@
 "use client" // Renders this component on the client/frontend, not just on the server/backend.
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, AlertCircle, Clock, Calendar, LucideIcon } from 'lucide-react';
+import Header from '../components/Header';
 
 interface DashboardCardProps {
   title: string;
@@ -73,15 +74,17 @@ const PersonalTaskList = () => (
 
 export default function AssignMateHomeDashboard() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Welcome back, User!</h1>
-      <div className="grid grid-cols-3 gap-6">
-        <UpcomingDeadlines />
-        <RecentActivity />
-        <QuickActions />
-        <YourTeams />
-        <PersonalTaskList />
-      </div>
-    </div>
+    <>
+      <Header />
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">Welcome back, User!</h1>
+        <div className="grid grid-cols-3 gap-6">
+          <UpcomingDeadlines />
+          <RecentActivity />
+          <QuickActions />
+          <YourTeams />
+          <PersonalTaskList />
+        </div>
+    </div></>
   );
 }

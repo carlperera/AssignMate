@@ -22,7 +22,9 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
       <body className={inter.className}>
         <div className={styles.pageWrapper}>
           <div className={styles.container}>
-            {children}
+            <main className={styles.main}>
+              {children}
+            </main>
             <Footer />
           </div>
         </div>

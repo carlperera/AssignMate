@@ -20,8 +20,10 @@
 .main {
   flex-grow: 1;
   padding: 20px 0;
+  margin-bottom: 40px; /* This creates the gap between content and footer */
 }
 
+/* You may need to add this class to your Footer component */
 .footer {
   margin-top: auto;
   padding: 10px 0;

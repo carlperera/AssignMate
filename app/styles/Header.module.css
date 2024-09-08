@@ -2,9 +2,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #e0e0e0;
     margin-bottom: 20px;
-    color: purple;
-    font-weight: bold;
 }
 
 .nav {
@@ -12,28 +12,27 @@
     gap: 40px;
 }
 
-.nav span {
+.nav a {
     text-decoration: none;
+    color: #333;
+    font-weight: 500;
     padding-bottom: 5px;
     border-bottom: 3px solid transparent;
-    transition: color 0.3s ease, border-bottom-color 0.3s ease;
-    cursor: pointer; 
+    transition: border-bottom-color 0.3s ease;
 }
 
-.nav span.active {
-    color: purple;
+.nav a.active {
     border-bottom-color: purple;
-}
-
-.nav span.inactive {
-    color: #888; 
-}
-
-.nav span.inactive:hover {
-    color: #555; 
-    border-bottom-color: #888; 
+    color: purple;
 }
 
 .header h1 {
+    color: purple;
     cursor: pointer;
+}
+
+.searchInput {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
