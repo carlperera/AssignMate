@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Folder } from "lucide-react";
 import Header from '../components/Header';
 
 interface Project {
+  id: string;
   name: string;
   color: string;
 }
@@ -16,42 +18,46 @@ interface ProjectGroup {
   projects: Project[];
 }
 
-const ProjectCard = ({ name, color }: Project) => (
-  <Card className="hover:shadow-lg transition-shadow duration-300">
-    <CardHeader>
-      <CardTitle className="flex items-center">
-        <Folder className="mr-2" style={{ color }} />
-        <span>{name}</span>
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <p className="text-sm text-muted-foreground">Project details</p>
-    </CardContent>
-  </Card>
-);
+const ProjectCard = ({ id, name, color }: Project) => {
+  return (
+    <Link href={`/projects-page/${id}`} passHref>
+      <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Folder className="mr-2" style={{ color }} />
+            <span>{name}</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Project details</p>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+};
 
 export default function Projects() {
   const projectGroups: ProjectGroup[] = [
     {
       name: "Team 1",
       projects: [
-        { name: 'Project Alpha', color: 'blue' },
-        { name: 'Project Beta', color: '#ff99ff' },
+        { id: 'alpha', name: 'Project Alpha', color: 'blue' },
+        { id: 'beta', name: 'Project Beta', color: '#ff99ff' },
       ]
     },
     {
       name: "Team 2",
       projects: [
-        { name: 'Project Gamma', color: 'red' },
-        { name: 'Project Delta', color: 'green' },
-        { name: 'Project Epsilon', color: 'purple' },
+        { id: 'gamma', name: 'Project Gamma', color: 'red' },
+        { id: 'delta', name: 'Project Delta', color: 'green' },
+        { id: 'epsilon', name: 'Project Epsilon', color: 'purple' },
       ]
     },
     {
       name: "Team 3",
       projects: [
-        { name: 'Project Zeta', color: 'orange' },
-        { name: 'Project Eta', color: 'pink' },
+        { id: 'zeta', name: 'Project Zeta', color: 'orange' },
+        { id: 'eta', name: 'Project Eta', color: 'pink' },
       ]
     }
   ];
@@ -82,7 +88,7 @@ export default function Projects() {
             <AccordionContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
                 {group.projects.map(project => (
-                  <ProjectCard key={project.name} {...project} />
+                  <ProjectCard key={project.id} {...project} />
                 ))}
               </div>
             </AccordionContent>
