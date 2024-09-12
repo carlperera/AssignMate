@@ -14,18 +14,21 @@ export type Database = {
           created_at: string | null
           proj_desc: string | null
           proj_id: string
+          proj_name: string
           team_id: string
         }
         Insert: {
           created_at?: string | null
           proj_desc?: string | null
           proj_id?: string
+          proj_name: string
           team_id: string
         }
         Update: {
           created_at?: string | null
           proj_desc?: string | null
           proj_id?: string
+          proj_name?: string
           team_id?: string
         }
         Relationships: [
@@ -42,17 +45,23 @@ export type Database = {
         Row: {
           created_at: string
           proj_id: string | null
+          sprint_desc: string | null
           sprint_id: string
+          sprint_name: string | null
         }
         Insert: {
           created_at?: string
           proj_id?: string | null
+          sprint_desc?: string | null
           sprint_id?: string
+          sprint_name?: string | null
         }
         Update: {
           created_at?: string
           proj_id?: string | null
+          sprint_desc?: string | null
           sprint_id?: string
+          sprint_name?: string | null
         }
         Relationships: [
           {
@@ -71,11 +80,11 @@ export type Database = {
           parent_task_id: string | null
           proj_id: string | null
           sprint_id: string | null
-          taks_assignees_list: string[] | null
-          task_assignees: Json | null
+          task_assignee: string | null
           task_deadline: string | null
           task_desc: string | null
           task_id: string
+          task_priority: Database["public"]["Enums"]["task_priority "] | null
           task_status: Database["public"]["Enums"]["task_status"] | null
         }
         Insert: {
@@ -84,11 +93,11 @@ export type Database = {
           parent_task_id?: string | null
           proj_id?: string | null
           sprint_id?: string | null
-          taks_assignees_list?: string[] | null
-          task_assignees?: Json | null
+          task_assignee?: string | null
           task_deadline?: string | null
           task_desc?: string | null
           task_id?: string
+          task_priority?: Database["public"]["Enums"]["task_priority "] | null
           task_status?: Database["public"]["Enums"]["task_status"] | null
         }
         Update: {
@@ -97,11 +106,11 @@ export type Database = {
           parent_task_id?: string | null
           proj_id?: string | null
           sprint_id?: string | null
-          taks_assignees_list?: string[] | null
-          task_assignees?: Json | null
+          task_assignee?: string | null
           task_deadline?: string | null
           task_desc?: string | null
           task_id?: string
+          task_priority?: Database["public"]["Enums"]["task_priority "] | null
           task_status?: Database["public"]["Enums"]["task_status"] | null
         }
         Relationships: [
@@ -131,15 +140,21 @@ export type Database = {
       team: {
         Row: {
           created_at: string
+          team_desc: string | null
           team_id: string
+          team_name: string
         }
         Insert: {
           created_at?: string
+          team_desc?: string | null
           team_id?: string
+          team_name: string
         }
         Update: {
           created_at?: string
+          team_desc?: string | null
           team_id?: string
+          team_name?: string
         }
         Relationships: []
       }
@@ -177,16 +192,19 @@ export type Database = {
           created_at: string
           team_id: string | null
           user_id: string
+          user_team_role: Database["public"]["Enums"]["user_team_role"]
         }
         Insert: {
           created_at?: string
           team_id?: string | null
           user_id: string
+          user_team_role?: Database["public"]["Enums"]["user_team_role"]
         }
         Update: {
           created_at?: string
           team_id?: string | null
           user_id?: string
+          user_team_role?: Database["public"]["Enums"]["user_team_role"]
         }
         Relationships: [
           {
@@ -215,6 +233,7 @@ export type Database = {
     Enums: {
       "task_priority ": "low" | "normal" | "high" | "critical"
       task_status: "doing" | "blocked" | "done"
+      user_team_role: "admin" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
