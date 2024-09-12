@@ -1,5 +1,6 @@
 "use client" // Renders this component on the client/frontend, not just on the server/backend.
 
+import { useRouter } from 'next/navigation' // app router 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, AlertCircle, Clock, Calendar, LucideIcon } from 'lucide-react';
@@ -10,6 +11,14 @@ interface DashboardCardProps {
   children: React.ReactNode;
 }
 
+// export default function DashboardPage() {
+//   const router = useRouter();
+
+
+  
+
+
+// }
 const DashboardCard = ({ title, children }: DashboardCardProps) => (
   <Card className="col-span-1">
     <CardHeader>

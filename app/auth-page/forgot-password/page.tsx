@@ -1,7 +1,7 @@
-"use client"; // Add this directive at the top
-
+"use client"; // acccess from server to host 
+import { useRouter } from 'next/navigation' // app router 
 import supabase from '../../supabase/supabaseClient';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -11,37 +11,31 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function AuthPage() {
-  
+
+  const router = useRouter(); 
   const HandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form from submitting normally
 
     const data = new FormData(event.currentTarget);
     const email = data.get('email') as string;
-    const password = data.get('password') as string;
-
+    console.log(`${window.location.origin}`)
 
     try {
 
-      const { data: signInData, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      const { data: signInData, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}`, 
+      })
+      
 
       if (error) {
         console.error('Error signing in:', error.message);
         // Handle the error, e.g., show a message to the user
         return;
       }
-
-      const { user, session } = signInData;
-
-      console.log('User signed in:', user);
-      console.log('Session:', session);
       // Handle successful sign-in, e.g., redirect the user or store the session
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -78,31 +72,12 @@ export default function AuthPage() {
                 width: '100%'
               }}
             >
-              Sign Up
+              Forgot Password
             </Typography>
             
 
             <Box component="form" noValidate onSubmit={HandleSubmit} sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                name="firstName"
-                autoComplete="John Applebottoms"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="John Applebottoms"
-                autoFocus
-              />
+              
               <TextField
                 margin="normal"
                 required
@@ -113,33 +88,13 @@ export default function AuthPage() {
                 autoComplete="test@gmail.com"
                 autoFocus
               />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="confirmPassword"
-                label="Confirm Password"
-                type="password"
-                id="confirmPassword"
-                autoComplete="current-password"
-              />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                Send Reset Email
               </Button>
               
             

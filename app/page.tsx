@@ -58,12 +58,10 @@ export default function AuthPage() {
         }
 
         const { user, session } = signInData;
-
-        console.log('User signed in:', user);
-        console.log('Session:', session);
+    
 
         // Handle successful sign-in
-        router.push('/home-page/')
+        router.push('/dashboard-page/')
 
         } catch (err) {
         console.error('Unexpected error:', err);
@@ -164,12 +162,12 @@ export default function AuthPage() {
                 </Button>
                 <Grid container>
                     <Grid item xs>
-                    <Link href="/auth/forgot-password/" variant="body2">
+                    <Link href="/auth-page/forgot-password/" variant="body2">
                         Forgot password?
                     </Link >
                     </Grid>
                     <Grid item>
-                    <Link href="/auth/sign-up/" variant="body2">
+                    <Link href="/auth-page/sign-up/" variant="body2">
                         {"Don't have an account? Sign Up"}
                     </Link>
                     </Grid>

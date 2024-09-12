@@ -1,4 +1,5 @@
-"use client"; // Add this directive at the top
+"use client"; // acccess from server to host 
+import { useRouter } from 'next/navigation' // app router 
 
 import supabase from '../../supabase/supabaseClient';
 import React from 'react';
@@ -11,15 +12,17 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function AuthPage() {
   
+  const router = useRouter();
+
   const HandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form from submitting normally
 
+    // extract form information (email and password)
     const data = new FormData(event.currentTarget);
     const email = data.get('email') as string;
     const password = data.get('password') as string;
@@ -42,6 +45,7 @@ export default function AuthPage() {
 
       console.log('User signed in:', user);
       console.log('Session:', session);
+      router.push('../dashboard-page/')
       // Handle successful sign-in, e.g., redirect the user or store the session
     } catch (err) {
       console.error('Unexpected error:', err);
