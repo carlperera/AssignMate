@@ -19,8 +19,8 @@ export default function Header() {
       </Link>
       <nav className={styles.nav}>
         <Link 
-          href="/home-page" 
-          className={isActive('/home-page')}
+          href="/dashboard-page" 
+          className={isActive('/dashboard-page')}
         >
           Home
         </Link>

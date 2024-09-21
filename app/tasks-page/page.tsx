@@ -106,9 +106,10 @@ export default function Tasks() {
   };
 
   return (
+    <div className="container mx-auto px-4">
     <div className={styles.pageContainer}>
       <Header />
-      <h1 className="text-2xl font-bold p-6">All Tasks</h1>
+      <h1 className="text-2xl font-bold my-6">All Tasks</h1>
       <Accordion type="multiple" value={openItems} onValueChange={setOpenItems} className="w-full">
         {tasksData.map((project, index) => (
           <AccordionItem value={`item-${index}`} key={index}>
@@ -126,6 +127,7 @@ export default function Tasks() {
           </AccordionItem>
         ))}
       </Accordion>
+    </div>
     </div>
   );
 }

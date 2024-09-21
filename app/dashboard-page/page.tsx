@@ -83,7 +83,7 @@ const PersonalTaskList = () => (
 
 export default function AssignMateHomeDashboard() {
   return (
-    <>
+    <div className="container mx-auto px-4">
       <Header />
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Welcome back, User!</h1>
@@ -94,6 +94,7 @@ export default function AssignMateHomeDashboard() {
           <YourTeams />
           <PersonalTaskList />
         </div>
-    </div></>
+      </div>
+    </div>
   );
 }
