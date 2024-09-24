@@ -104,13 +104,16 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Settings</button>
           </div>
         </aside>
-        <main className="flex-grow p-6 overflow-auto">
+
+        {/* main content area */}
+        <main className="flex-grow p-6 overflow-x-auto">
           <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex space-x-4 h-full">
+            <div className="flex space-x-4 h-full" style={{ minWidth: 'max-content' }}>
               {Object.entries(data).map(([columnId, column]) => (
-                <div key={columnId} className="w-64 bg-gray-100 rounded p-2 flex flex-col h-full">
+                <div key={columnId} className="w-64 flex-shrink-0 bg-gray-100 rounded p-2 flex flex-col h-full">
                   <h2 className="font-bold mb-2">{column.title} {column.teamMembers.reduce((acc, member) => acc + member.tasks.length, 0) + column.unassignedTasks.length}</h2>
                   <div className="flex-grow overflow-y-auto">
+                    {/* column content */}
                     {allTeamMembers.map((memberId) => {
                       const member = column.teamMembers.find(m => m.id === memberId) || { id: memberId, name: memberId, tasks: [] };
                       return (
@@ -160,7 +163,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
                 </div>
               ))}
               {/* Add New Column Button */}
-              <div className="w-64 bg-gray-100 rounded p-2 flex flex-col h-full justify-center items-center">
+              <div className="w-64 flex-shrink-0 bg-gray-100 rounded p-2 flex flex-col h-full justify-center items-center">
                 <button
                   onClick={onAddNewColumn}
                   className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-purple-600 hover:text-purple-800 transition-colors"
