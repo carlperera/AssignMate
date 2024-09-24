@@ -4,15 +4,18 @@ import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { BoardData, Column, Task, TeamMember } from './ClientKanbanWrapper';
 import { Underdog } from 'next/font/google';
+import { Plus } from 'lucide-react';
+
 
 interface KanbanProps {
   data: BoardData;
   onDragEnd: (result: DropResult) => void;
   onAddNewTask: (columnId: string, task: Task) => void;
   onDeleteTask: (columnId: string, taskId: string) => void;
+  onAddNewColumn: () => void;
 }
 
-export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTask, onDeleteTask }) => {
+export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTask, onDeleteTask, onAddNewColumn }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTaskColumn, setNewTaskColumn] = useState('');
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -156,6 +159,15 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
                   </button>
                 </div>
               ))}
+              {/* Add New Column Button */}
+              <div className="w-64 bg-gray-100 rounded p-2 flex flex-col h-full justify-center items-center">
+                <button
+                  onClick={onAddNewColumn}
+                  className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-purple-600 hover:text-purple-800 transition-colors"
+                >
+                  <Plus size={48} />
+                </button>
+              </div>
             </div>
           </DragDropContext>
         </main>

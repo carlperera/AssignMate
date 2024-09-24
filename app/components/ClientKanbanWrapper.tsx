@@ -3,6 +3,10 @@
 import React, { useState } from 'react';
 import { KanbanBoard } from './Kanban';
 import { DropResult } from '@hello-pangea/dnd';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
 
 export interface Task {
   id: string;
@@ -31,8 +35,11 @@ interface ClientKanbanWrapperProps {
   initialData: BoardData;
 }
 
+
 export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initialData }) => {
   const [boardData, setBoardData] = useState<BoardData>(initialData);
+  const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
+  const [newColumnTitle, setNewColumnTitle] = useState('');
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -101,8 +108,57 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
     });
   };
 
+  const addNewColumn = () => {
+    setIsAddColumnDialogOpen(true);
+  };
+
+  const handleAddNewColumn = () => {
+    if (newColumnTitle.trim()) {
+      setBoardData(prevData => ({
+        ...prevData,
+        [newColumnTitle.toLowerCase().replace(/\s+/g, '-')]: {
+          title: newColumnTitle,
+          teamMembers: [],
+          unassignedTasks: []
+        }
+      }));
+      setNewColumnTitle('');
+      setIsAddColumnDialogOpen(false);
+    }
+  };
 
 
-  return <KanbanBoard data={boardData} onDragEnd={handleDragEnd} onAddNewTask={addNewTask} onDeleteTask={deleteTask} />;
+
+
+
+return (
+    <>
+      <KanbanBoard
+        data={boardData}
+        onDragEnd={handleDragEnd}
+        onAddNewTask={addNewTask}
+        onDeleteTask={deleteTask}
+        onAddNewColumn={addNewColumn}
+      />
+      <Dialog open={isAddColumnDialogOpen} onOpenChange={setIsAddColumnDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Column</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={newColumnTitle}
+            onChange={(e) => setNewColumnTitle(e.target.value)}
+            placeholder="Enter column title"
+          />
+          <DialogFooter>
+            <Button onClick={handleAddNewColumn}>Add Column</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+
+
+
 };
 

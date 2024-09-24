@@ -111,7 +111,7 @@ const initialData: BoardData = {
 
 export default function BoardTabPage() {
   return (
-    <div className="h-screen">
+    <div className="h-screen overflow-hidden">
       <ClientKanbanWrapper initialData={initialData} />
     </div>
   );
