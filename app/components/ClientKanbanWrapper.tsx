@@ -41,6 +41,7 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
   const [boardData, setBoardData] = useState<BoardData>(initialData);
   const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState('');
+  const [sortOption, setSortOption] = useState<'none' | 'dueDate'>('none');
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -49,7 +50,6 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
 
     const [sourceColumnId, sourceTeamId] = source.droppableId.split('-');
     const [destColumnId, destTeamId] = destination.droppableId.split('-');
-
     const newBoardData = { ...boardData };
 
     // Helper function to get task array based on column and team ID
@@ -74,6 +74,7 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
   const addNewTask = (columnId: string, task: Task) => {
     setBoardData(prevData => {
         const newData = { ...prevData };
+        
         // Check if the task already exists
         const taskExists = newData[columnId].unassignedTasks.some(t => t.id === task.id);
         if (!taskExists) {
@@ -83,6 +84,30 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
     });
   };
 
+    const editTask = (columnId: string, taskId: string, updatedTask: Partial<Task>) => {
+    setBoardData(prevData => {
+      const newData = { ...prevData };
+      const column = newData[columnId];
+      
+      // Check unassigned tasks
+      let taskIndex = column.unassignedTasks.findIndex(task => task.id === taskId);
+      if (taskIndex !== -1) {
+        column.unassignedTasks[taskIndex] = { ...column.unassignedTasks[taskIndex], ...updatedTask };
+        return newData;
+      }
+
+      // Check team member tasks
+      for (const member of column.teamMembers) {
+        taskIndex = member.tasks.findIndex(task => task.id === taskId);
+        if (taskIndex !== -1) {
+          member.tasks[taskIndex] = { ...member.tasks[taskIndex], ...updatedTask };
+          return newData;
+        }
+      }
+
+      return newData;
+    });
+  };
 
   const deleteTask = (columnId: string, taskId: string) => {
     setBoardData(prevData => {
@@ -128,6 +153,30 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
     }
   };
 
+  const sortTasks = (tasks: Task[]) => {
+    if (sortOption === 'dueDate') {
+      return [...tasks].sort((a, b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      });
+    }
+    return tasks;
+  };
+
+  const sortedBoardData = Object.entries(boardData).reduce((acc, [columnId, column]) => {
+    const sortedColumn = {
+      ...column,
+      teamMembers: column.teamMembers.map(member => ({
+        ...member,
+        tasks: sortTasks(member.tasks)
+      })),
+      unassignedTasks: sortTasks(column.unassignedTasks)
+    };
+    acc[columnId] = sortedColumn;
+    return acc;
+  }, {} as BoardData);
+
 
 
 
@@ -135,11 +184,15 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
 return (
     <>
       <KanbanBoard
-        data={boardData}
+        data={sortedBoardData}
         onDragEnd={handleDragEnd}
         onAddNewTask={addNewTask}
+        onEditTask={editTask}
         onDeleteTask={deleteTask}
         onAddNewColumn={addNewColumn}
+        onSortChange={setSortOption}
+        currentSort={sortOption}
+
       />
       <Dialog open={isAddColumnDialogOpen} onOpenChange={setIsAddColumnDialogOpen}>
         <DialogContent>

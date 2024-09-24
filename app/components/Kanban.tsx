@@ -3,25 +3,41 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { BoardData, Column, Task, TeamMember } from './ClientKanbanWrapper';
-import { Plus, Calendar } from 'lucide-react';
+import { Plus, Calendar, Edit2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface KanbanProps {
   data: BoardData;
   onDragEnd: (result: DropResult) => void;
   onAddNewTask: (columnId: string, task: Task) => void;
+  onEditTask: (columnId: string, taskId: string, updatedTask: Partial<Task>) => void;
   onDeleteTask: (columnId: string, taskId: string) => void;
   onAddNewColumn: () => void;
+  onSortChange: (option: 'none' | 'dueDate') => void;
+  currentSort: 'none' | 'dueDate';
 }
 
-export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTask, onDeleteTask, onAddNewColumn }) => {
+export const KanbanBoard: React.FC<KanbanProps> = ({
+  data,
+  onDragEnd,
+  onAddNewTask,
+  onEditTask,
+  onDeleteTask,
+  onAddNewColumn,
+  onSortChange,
+  currentSort 
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [newTaskColumn, setNewTaskColumn] = useState('');
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskTag, setNewTaskTag] = useState('');
-  const [newTaskDueDate, setNewTaskDueDate] = useState('');
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingColumn, setEditingColumn] = useState('');
+  const [taskTitle, setTaskTitle] = useState('');
+  const [taskTag, setTaskTag] = useState('');
+  const [taskDueDate, setTaskDueDate] = useState('');
 
   const allTeamMembers = Array.from(new Set(
     Object.values(data).flatMap(column => column.teamMembers.map(member => member.id))
@@ -30,29 +46,62 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
   const handleAddNewTask = (columnId: string) => {
     setNewTaskColumn(columnId);
     setIsModalOpen(true);
+    setTaskTitle('');
+    setTaskTag('');
+    setTaskDueDate('');
   };
 
-  const handleSubmitNewTask = () => {
-    if (newTaskTitle) {
-      const newTask: Task = {
-        id: Date.now().toString(),
-        title: newTaskTitle,
-        tag: newTaskTag || undefined,
-        assignee: null,
-        dueDate: newTaskDueDate || undefined
+  const handleEditTask = (columnId: string, task: Task) => {
+    setEditingColumn(columnId);
+    setEditingTask(task);
+    setTaskTitle(task.title);
+    setTaskTag(task.tag || '');
+    setTaskDueDate(task.dueDate || '');
+    setIsEditModalOpen(true);
+  };
+
+  const handleSubmitTask = (isEdit: boolean) => {
+    if (taskTitle) {
+      const taskData: Partial<Task> = {
+        title: taskTitle,
+        tag: taskTag || undefined,
+        dueDate: taskDueDate || undefined
       };
-      onAddNewTask(newTaskColumn, newTask);
+
+      if (isEdit && editingTask) {
+        onEditTask(editingColumn, editingTask.id, taskData);
+      } else {
+        onAddNewTask(newTaskColumn, {
+          id: Date.now().toString(),
+          ...taskData,
+          assignee: null
+        } as Task);
+      }
+
       setIsModalOpen(false);
-      setNewTaskTitle('');
-      setNewTaskTag('');
-      setNewTaskDueDate('');
-      setNewTaskColumn('');
+      setIsEditModalOpen(false);
+      setTaskTitle('');
+      setTaskTag('');
+      setTaskDueDate('');
+      setEditingTask(null);
+      setEditingColumn('');
     }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const getTaskColor = (dueDate?: string) => {
+    if (!dueDate) return 'bg-white';
+    const today = new Date();
+    const taskDate = new Date(dueDate);
+    const diffDays = Math.ceil((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return 'bg-red-100'; // Overdue
+    if (diffDays <= 3) return 'bg-yellow-100'; // Due soon
+    return 'bg-white';
   };
 
   const TaskCard = ({ task, columnId, index }: { task: Task; columnId: string; index: number }) => (
@@ -62,7 +111,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="bg-white p-2 mb-2 rounded shadow relative"
+          className={`${getTaskColor(task.dueDate)} p-2 mb-2 rounded shadow relative`}
         >
           <h4 className="font-semibold">{task.title}</h4>
           {task.tag && <div className="text-sm text-gray-600">{task.tag}</div>}
@@ -72,6 +121,12 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
               {formatDate(task.dueDate)}
             </div>
           )}
+          <button
+            onClick={() => handleEditTask(columnId, task)}
+            className="absolute top-1 right-6 text-blue-500 hover:text-blue-700"
+          >
+            <Edit2 size={14} />
+          </button>
           <button
             onClick={() => onDeleteTask(columnId, task.id)}
             className="absolute top-1 right-1 text-red-500 hover:text-red-700"
@@ -116,6 +171,17 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
 
         {/* main content area */}
         <main className="flex-grow p-6 overflow-x-auto">
+          <div className="mb-4">
+            <Select onValueChange={onSortChange} value={currentSort}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No sorting</SelectItem>
+                <SelectItem value="dueDate">Sort by due date</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="flex space-x-4 h-full" style={{ minWidth: 'max-content' }}>
               {Object.entries(data).map(([columnId, column]) => (
@@ -184,46 +250,87 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
           </DragDropContext>
         </main>
       </div>
-      {isModalOpen && (
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Task</DialogTitle>
-            </DialogHeader>
-            <Input
-              type="text"
-              placeholder="Task Title"
-              className="w-full p-2 mb-4 border rounded"
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-            />
-            <Input
-              type="text"
-              placeholder="Task Tag (optional)"
-              className="w-full p-2 mb-4 border rounded"
-              value={newTaskTag}
-              onChange={(e) => setNewTaskTag(e.target.value)}
-            />
-            <Input
-              type="date"
-              placeholder="Due Date (optional)"
-              className="w-full p-2 mb-4 border rounded"
-              value={newTaskDueDate}
-              onChange={(e) => setNewTaskDueDate(e.target.value)}
-            />
-            <DialogFooter>
-              <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSubmitNewTask}>
-                Add Task
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+      <TaskModal
+        isOpen={isModalOpen || isEditModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setIsEditModalOpen(false);
+        }}
+        onSubmit={() => handleSubmitTask(isEditModalOpen)}
+        title={isEditModalOpen ? 'Edit Task' : 'Add New Task'}
+        taskTitle={taskTitle}
+        setTaskTitle={setTaskTitle}
+        taskTag={taskTag}
+        setTaskTag={setTaskTag}
+        taskDueDate={taskDueDate}
+        setTaskDueDate={setTaskDueDate}
+      />
     </div>
   );
 };
 
+interface TaskModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+  title: string;
+  taskTitle: string;
+  setTaskTitle: (value: string) => void;
+  taskTag: string;
+  setTaskTag: (value: string) => void;
+  taskDueDate: string;
+  setTaskDueDate: (value: string) => void;
+}
+
+const TaskModal: React.FC<TaskModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  title,
+  taskTitle,
+  setTaskTitle,
+  taskTag,
+  setTaskTag,
+  taskDueDate,
+  setTaskDueDate
+}) => (
+  <Dialog open={isOpen} onOpenChange={onClose}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+      </DialogHeader>
+      <Input
+        type="text"
+        placeholder="Task Title"
+        className="w-full p-2 mb-4 border rounded"
+        value={taskTitle}
+        onChange={(e) => setTaskTitle(e.target.value)}
+      />
+      <Input
+        type="text"
+        placeholder="Task Tag (optional)"
+        className="w-full p-2 mb-4 border rounded"
+        value={taskTag}
+        onChange={(e) => setTaskTag(e.target.value)}
+      />
+      <Input
+        type="date"
+        placeholder="Due Date (optional)"
+        className="w-full p-2 mb-4 border rounded"
+        value={taskDueDate}
+        onChange={(e) => setTaskDueDate(e.target.value)}
+      />
+      <DialogFooter>
+        <Button variant="secondary" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button onClick={onSubmit}>
+          {title === 'Edit Task' ? 'Save Changes' : 'Add Task'}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+);
+
 export default KanbanBoard;
+
