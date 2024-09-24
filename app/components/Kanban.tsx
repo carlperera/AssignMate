@@ -106,15 +106,9 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
       <div className="flex-grow flex overflow-hidden"> {/* sidebar */}
         <aside className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
           <div className="p-4 space-y-2">
-            <button className="w-full text-left py-2 px-4 bg-purple-100 text-purple-700 rounded">Timeline</button>
-            <button className="w-full text-left py-2 px-4 bg-purple-600 text-white rounded">Board</button>
-            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Backlog</button>
-            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Sprints</button>
-            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Goals</button>
-            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded mt-8">Chat</button>
+            <button className="w-full text-left py-2 px-4 bg-purple-600 text-white rounded">Board</button> 
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meetings</button>
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meeting Scheduler</button>
-            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Smart Assistant</button>
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded mt-8">Project Pages</button>
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Settings</button>
           </div>
