@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { BoardData, Column, Task, TeamMember } from './ClientKanbanWrapper';
-import { Underdog } from 'next/font/google';
-import { Plus } from 'lucide-react';
-
+import { Plus, Calendar } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface KanbanProps {
   data: BoardData;
@@ -20,6 +21,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
   const [newTaskColumn, setNewTaskColumn] = useState('');
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskTag, setNewTaskTag] = useState('');
+  const [newTaskDueDate, setNewTaskDueDate] = useState('');
 
   const allTeamMembers = Array.from(new Set(
     Object.values(data).flatMap(column => column.teamMembers.map(member => member.id))
@@ -36,14 +38,21 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
         id: Date.now().toString(),
         title: newTaskTitle,
         tag: newTaskTag || undefined,
-        assignee: null
+        assignee: null,
+        dueDate: newTaskDueDate || undefined
       };
       onAddNewTask(newTaskColumn, newTask);
       setIsModalOpen(false);
       setNewTaskTitle('');
       setNewTaskTag('');
+      setNewTaskDueDate('');
       setNewTaskColumn('');
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   const TaskCard = ({ task, columnId, index }: { task: Task; columnId: string; index: number }) => (
@@ -57,6 +66,12 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
         >
           <h4 className="font-semibold">{task.title}</h4>
           {task.tag && <div className="text-sm text-gray-600">{task.tag}</div>}
+          {task.dueDate && (
+            <div className="text-sm text-gray-600 flex items-center mt-1">
+              <Calendar size={14} className="mr-1" />
+              {formatDate(task.dueDate)}
+            </div>
+          )}
           <button
             onClick={() => onDeleteTask(columnId, task.id)}
             className="absolute top-1 right-1 text-red-500 hover:text-red-700"
@@ -176,42 +191,42 @@ export const KanbanBoard: React.FC<KanbanProps> = ({ data, onDragEnd, onAddNewTa
         </main>
       </div>
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <h3 className="text-lg font-bold mb-4">Add New Task</h3>
-            <input
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Task</DialogTitle>
+            </DialogHeader>
+            <Input
               type="text"
               placeholder="Task Title"
               className="w-full p-2 mb-4 border rounded"
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
             />
-            <input
+            <Input
               type="text"
               placeholder="Task Tag (optional)"
               className="w-full p-2 mb-4 border rounded"
               value={newTaskTag}
               onChange={(e) => setNewTaskTag(e.target.value)}
             />
-            <div className="flex justify-end">
-              <button
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded mr-2"
-                onClick={() => setIsModalOpen(false)}
-              >
+            <Input
+              type="date"
+              placeholder="Due Date (optional)"
+              className="w-full p-2 mb-4 border rounded"
+              value={newTaskDueDate}
+              onChange={(e) => setNewTaskDueDate(e.target.value)}
+            />
+            <DialogFooter>
+              <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
                 Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-purple-600 text-white rounded"
-                onClick={(e) => {
-                  e.preventDefault(); // Prevent any default form submission
-                  handleSubmitNewTask();
-                }}
-              >
+              </Button>
+              <Button onClick={handleSubmitNewTask}>
                 Add Task
-              </button>
-            </div>
-          </div>
-        </div>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

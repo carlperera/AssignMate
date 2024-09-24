@@ -13,6 +13,7 @@ export interface Task {
   title: string;
   tag?: string;
   assignee: string | null;
+  dueDate?: string;
 }
 
 export interface TeamMember {

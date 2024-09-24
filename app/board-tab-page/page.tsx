@@ -8,7 +8,7 @@ const initialData: BoardData = {
         id: 'cp',
         name: 'Carl Perera',
         tasks: [
-          { id: '1', title: 'Implement user authentication', tag: 'feature', assignee: 'cp' },
+          { id: '1', title: 'Implement user authentication', tag: 'feature', assignee: 'cp', dueDate: '2024-10-15' },
           { id: '2', title: 'Design landing page', tag: 'design', assignee: 'cp' },
         ],
       },
@@ -16,7 +16,7 @@ const initialData: BoardData = {
         id: 'pf',
         name: 'Patrick Fitzgerald',
         tasks: [
-          { id: '3', title: 'Set up CI/CD pipeline', tag: 'devops', assignee: 'pf' },
+          { id: '3', title: 'Set up CI/CD pipeline', tag: 'devops', assignee: 'pf', dueDate: '2024-10-20' },
         ],
       },
       {
@@ -30,13 +30,13 @@ const initialData: BoardData = {
         id: 'kt',
         name: 'Kevin Tran',
         tasks: [
-          { id: '5', title: 'Optimize database queries', tag: 'performance', assignee: 'kt' },
+          { id: '5', title: 'Optimize database queries', tag: 'performance', assignee: 'kt', dueDate: '2024-10-18' },
         ],
       },
     ],
     unassignedTasks: [
       { id: '6', title: 'Write unit tests', tag: 'testing', assignee: null },
-      { id: '7', title: 'Research new technologies', tag: 'research', assignee: null },
+      { id: '7', title: 'Research new technologies', tag: 'research', assignee: null, dueDate: '2024-11-01' },
     ],
   },
   inProgress: {
@@ -46,7 +46,7 @@ const initialData: BoardData = {
         id: 'cp',
         name: 'Carl Perera',
         tasks: [
-          { id: '8', title: 'Refactor codebase', tag: 'maintenance', assignee: 'cp' },
+          { id: '8', title: 'Refactor codebase', tag: 'maintenance', assignee: 'cp', dueDate: '2024-10-25' },
         ],
       },
       {
@@ -60,7 +60,7 @@ const initialData: BoardData = {
         id: 'jm',
         name: 'Jaden Mu',
         tasks: [
-          { id: '10', title: 'Create user onboarding flow', tag: 'ux', assignee: 'jm' },
+          { id: '10', title: 'Create user onboarding flow', tag: 'ux', assignee: 'jm', dueDate: '2024-10-30' },
         ],
       },
       {
