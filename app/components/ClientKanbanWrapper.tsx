@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 
+
 export interface Task {
   id: string;
   title: string;
@@ -43,11 +44,20 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
   const [newColumnTitle, setNewColumnTitle] = useState('');
   const [sortOption, setSortOption] = useState<'none' | 'dueDate'>('none');
 
-  const handleDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
+const handleDragEnd = (result: DropResult) => {
+  const { source, destination, type } = result;
 
-    if (!destination) return;
+  if (!destination) return;
 
+  if (type === 'COLUMN') {
+    // Handle column reordering
+    const entries = Object.entries(boardData);
+    const [removed] = entries.splice(source.index, 1);
+    entries.splice(destination.index, 0, removed);
+    const reorderedBoardData = Object.fromEntries(entries);
+    setBoardData(reorderedBoardData);
+  } else {
+    // Handle task reordering
     const [sourceColumnId, sourceTeamId] = source.droppableId.split('-');
     const [destColumnId, destTeamId] = destination.droppableId.split('-');
     const newBoardData = { ...boardData };
@@ -69,6 +79,8 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({ initia
     destTaskArray.splice(destination.index, 0, { ...movedTask, assignee: destTeamId === 'unassigned' ? null : destTeamId });
 
     setBoardData(newBoardData);
+  }
+
   };
 
   const addNewTask = (columnId: string, task: Task) => {
