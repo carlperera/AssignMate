@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 
-
 export interface Task {
   id: string;
   title: string;
@@ -67,7 +66,8 @@ const handleDragEnd = (result: DropResult) => {
       if (teamId === 'unassigned') {
         return newBoardData[columnId].unassignedTasks;
       }
-      return newBoardData[columnId].teamMembers.find(m => m.id === teamId)!.tasks;
+      const member = newBoardData[columnId].teamMembers.find(m => m.id === teamId);
+      return member ? member.tasks : [];
     };
 
     // Remove task from source
@@ -76,7 +76,21 @@ const handleDragEnd = (result: DropResult) => {
 
     // Add task to destination
     const destTaskArray = getTaskArray(destColumnId, destTeamId);
-    destTaskArray.splice(destination.index, 0, { ...movedTask, assignee: destTeamId === 'unassigned' ? null : destTeamId });
+    const updatedTask = { 
+      ...movedTask, 
+      assignee: destTeamId === 'unassigned' ? null : destTeamId 
+    };
+    destTaskArray.splice(destination.index, 0, updatedTask);
+
+    // If the destination is not 'unassigned', ensure the task is assigned to the correct team member
+    if (destTeamId !== 'unassigned') {
+      const destMember = newBoardData[destColumnId].teamMembers.find(m => m.id === destTeamId);
+      if (destMember) {
+        destMember.tasks = destTaskArray;
+      }
+    } else {
+      newBoardData[destColumnId].unassignedTasks = destTaskArray;
+    }
 
     setBoardData(newBoardData);
   }
@@ -147,22 +161,37 @@ const handleDragEnd = (result: DropResult) => {
   };
 
   const addNewColumn = () => {
-    setIsAddColumnDialogOpen(true);
-  };
+  if (newColumnTitle.trim()) {
+    setBoardData(prevData => {
+      // Get all unique team members from existing columns
+      const allTeamMembers = Array.from(new Set(
+        Object.values(prevData).flatMap(column => 
+          column.teamMembers.map(member => JSON.stringify({ id: member.id, name: member.name }))
+        )
+      )).map(memberString => JSON.parse(memberString)); // make sure we only add unique team members (avoid duplicates)
 
-  const handleAddNewColumn = () => {
-    if (newColumnTitle.trim()) {
-      setBoardData(prevData => ({
+
+      return {
         ...prevData,
         [newColumnTitle.toLowerCase().replace(/\s+/g, '-')]: {
           title: newColumnTitle,
-          teamMembers: [],
+          teamMembers: allTeamMembers.map(member => ({
+            id: member.id,
+            name: member.name,
+            tasks: []
+          })),
           unassignedTasks: []
         }
-      }));
-      setNewColumnTitle('');
-      setIsAddColumnDialogOpen(false);
-    }
+      };
+    });
+    setNewColumnTitle('');
+    setIsAddColumnDialogOpen(false);
+  }
+
+  };
+
+  const handleAddNewColumnClick = () => {
+  setIsAddColumnDialogOpen(true);
   };
 
   const sortTasks = (tasks: Task[]) => {
@@ -190,9 +219,6 @@ const handleDragEnd = (result: DropResult) => {
   }, {} as BoardData);
 
 
-
-
-
 return (
     <>
       <KanbanBoard
@@ -201,7 +227,7 @@ return (
         onAddNewTask={addNewTask}
         onEditTask={editTask}
         onDeleteTask={deleteTask}
-        onAddNewColumn={addNewColumn}
+        onAddNewColumn={handleAddNewColumnClick}
         onSortChange={setSortOption}
         currentSort={sortOption}
 
@@ -217,7 +243,7 @@ return (
             placeholder="Enter column title"
           />
           <DialogFooter>
-            <Button onClick={handleAddNewColumn}>Add Column</Button>
+            <Button onClick={addNewColumn}>Add Column</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

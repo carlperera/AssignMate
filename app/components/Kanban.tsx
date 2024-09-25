@@ -199,9 +199,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                               {column.title} {column.teamMembers.reduce((acc, member) => acc + member.tasks.length, 0) + column.unassignedTasks.length}
                             </div>
                             <div className="flex-grow overflow-y-auto">
-                              {allTeamMembers.map((memberId) => {
-                                const member = column.teamMembers.find(m => m.id === memberId) || { id: memberId, name: memberId, tasks: [] };
-                                return (
+                              {column.teamMembers.map((member) => (
                                   <div key={member.id} className="mb-2">
                                     <div className="w-full text-left font-semibold p-2 bg-gray-200 rounded">
                                       {member.name} ({member.tasks.length} issues)
@@ -221,8 +219,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                                       )}
                                     </Droppable>
                                   </div>
-                                );
-                              })}
+                              ))}
                               <Droppable droppableId={`${columnId}-unassigned`} type="TASK">
                                 {(provided) => (
                                   <div
