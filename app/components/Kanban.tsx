@@ -144,15 +144,12 @@ return (
     <div className="flex flex-col h-screen">
       <Header />
       <div className="flex-grow flex overflow-hidden">
+        {/* sidebar */}
         <aside className="w-64 bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0">
           <div className="p-4 space-y-2">
-            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">
-              <Link href="/dashboard-page">Home</Link>
-            </button>
             <button className="w-full text-left py-2 px-4 bg-purple-600 text-white rounded">Board</button>
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meetings</button>
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meeting Scheduler</button>
-            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded mt-8">Project Pages</button>
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Settings</button>
           </div>
         </aside>
