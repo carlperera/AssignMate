@@ -6,6 +6,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Link from 'next/link';
+import Header from './Header';
+import Head from 'next/head';
+
 
 interface KanbanProps {
   data: BoardData;
@@ -136,55 +140,43 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
     </Draggable>
   );
 
-  return (
-    <>
-      <div className="flex flex-col h-screen">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-bold text-gray-900">AssignMate</h1>
+return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex-grow flex overflow-hidden">
+        <aside className="w-64 bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0">
+          <div className="p-4 space-y-2">
+            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">
+              <Link href="/dashboard-page">Home</Link>
+            </button>
+            <button className="w-full text-left py-2 px-4 bg-purple-600 text-white rounded">Board</button>
+            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meetings</button>
+            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meeting Scheduler</button>
+            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded mt-8">Project Pages</button>
+            <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Settings</button>
           </div>
-        </header>
-        <nav className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex">
-                <button className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Main</button>
-                <button className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Teams</button>
-                <button className="text-purple-600 hover:text-purple-900 px-3 py-2 rounded-md text-sm font-medium">Projects</button>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <div className="flex-grow flex overflow-hidden">
-          <aside className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
-            <div className="p-4 space-y-2">
-              <button className="w-full text-left py-2 px-4 bg-purple-600 text-white rounded">Board</button> 
-              <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meetings</button>
-              <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meeting Scheduler</button>
-              <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded mt-8">Project Pages</button>
-              <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Settings</button>
-            </div>
-          </aside>
+        </aside>
 
-          <main className="flex-grow p-6 overflow-x-auto">
-            <div className="mb-4">
-              <Select onValueChange={onSortChange} value={currentSort}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No sorting</SelectItem>
-                  <SelectItem value="dueDate">Sort by due date</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        <main className="flex-grow flex flex-col overflow-hidden">
+          <div className="pl-6 flex">
+            <Select onValueChange={onSortChange} value={currentSort}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No sorting</SelectItem>
+                <SelectItem value="dueDate">Sort by due date</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex-grow overflow-x-auto overflow-y-hidden">
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="board" direction="horizontal" type="COLUMN">
                 {(provided) => (
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className="flex space-x-4 h-full"
+                    className="flex h-full p-6 space-x-4"
                     style={{ minWidth: 'max-content' }}
                   >
                     {Object.entries(data).map(([columnId, column], index) => (
@@ -193,51 +185,55 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            className="w-64 flex-shrink-0 bg-gray-100 rounded p-2 flex flex-col h-full"
+                            className="w-64 flex-shrink-0 flex flex-col bg-gray-100 rounded"
                           >
-                            <div {...provided.dragHandleProps} className="font-bold mb-2">
-                              {column.title} {column.teamMembers.reduce((acc, member) => acc + member.tasks.length, 0) + column.unassignedTasks.length}
+                            <div {...provided.dragHandleProps} className="p-2 font-bold">
+                              {column.title} ({column.teamMembers.reduce((acc, member) => acc + member.tasks.length, 0) + column.unassignedTasks.length})
                             </div>
                             <div className="flex-grow overflow-y-auto">
                               {column.teamMembers.map((member) => (
-                                  <div key={member.id} className="mb-2">
-                                    <div className="w-full text-left font-semibold p-2 bg-gray-200 rounded">
-                                      {member.name} ({member.tasks.length} issues)
-                                    </div>
-                                    <Droppable droppableId={`${columnId}-${member.id}`} type="TASK">
-                                      {(provided) => (
-                                        <div
-                                          {...provided.droppableProps}
-                                          ref={provided.innerRef}
-                                          className="bg-white p-2 rounded mt-1"
-                                        >
-                                          {member.tasks.map((task, index) => (
-                                            <TaskCard key={task.id} task={task} columnId={columnId} index={index} />
-                                          ))}
-                                          {provided.placeholder}
-                                        </div>
-                                      )}
-                                    </Droppable>
+                                <div key={member.id} className="mb-2 mx-2">
+                                  <div className="w-full text-left font-semibold p-2 bg-gray-200 rounded">
+                                    {member.name} ({member.tasks.length} issues)
                                   </div>
+                                  <Droppable droppableId={`${columnId}-${member.id}`} type="TASK">
+                                    {(provided) => (
+                                      <div
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        className="bg-white p-2 rounded mt-1"
+                                      >
+                                        {member.tasks.map((task, index) => (
+                                          <TaskCard key={task.id} task={task} columnId={columnId} index={index} />
+                                        ))}
+                                        {provided.placeholder}
+                                      </div>
+                                    )}
+                                  </Droppable>
+                                </div>
                               ))}
                               <Droppable droppableId={`${columnId}-unassigned`} type="TASK">
                                 {(provided) => (
                                   <div
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
-                                    className="bg-white p-2 mb-2 rounded"
+                                    className="mx-2 mb-2 rounded"
                                   >
-                                    <h3 className="font-semibold mb-2">Unassigned</h3>
-                                    {column.unassignedTasks.map((task, index) => (
-                                      <TaskCard key={task.id} task={task} columnId={columnId} index={index} />
-                                    ))}
-                                    {provided.placeholder}
+                                    <div className="w-full text-left font-semibold p-2 bg-gray-200 rounded mb-1">
+                                      Unassigned ({column.unassignedTasks.length} issues)
+                                    </div>
+                                    <div className="bg-white p-2 rounded">
+                                      {column.unassignedTasks.map((task, index) => (
+                                        <TaskCard key={task.id} task={task} columnId={columnId} index={index} />
+                                      ))}
+                                      {provided.placeholder}
+                                  </div>
                                   </div>
                                 )}
                               </Droppable>
                             </div>
                             <button 
-                              className="mt-2 w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+                              className="m-2 w-auto bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
                               onClick={() => handleAddNewTask(columnId)}
                             >
                               + Add New Task
@@ -247,7 +243,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                       </Draggable>
                     ))}
                     {provided.placeholder}
-                    <div className="w-64 flex-shrink-0 bg-gray-100 rounded p-2 flex flex-col h-full justify-center items-center">
+                    <div className="w-64 flex-shrink-0 bg-gray-100 rounded p-2 flex flex-col justify-center items-center">
                       <button
                         onClick={onAddNewColumn}
                         className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-purple-600 hover:text-purple-800 transition-colors"
@@ -259,8 +255,8 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                 )}
               </Droppable>
             </DragDropContext>
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
       <TaskModal
         isOpen={isModalOpen || isEditModalOpen}
@@ -277,7 +273,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
         taskDueDate={taskDueDate}
         setTaskDueDate={setTaskDueDate}
       />
-    </>
+    </div>
   );
 };
 

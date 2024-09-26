@@ -1,5 +1,6 @@
 import { ClientKanbanWrapper, BoardData } from '../components/ClientKanbanWrapper';
 
+
 const initialData: BoardData = {
   todo: {
     title: 'To Do',

@@ -14,9 +14,13 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      <Link href="/home-page">
-        <h1>AssignMate</h1>
-      </Link>
+      <header className="bg-white">
+          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <Link href="/home-page">
+              <h1 className="text-2xl font-bold text-gray-900">AssignMate</h1>
+            </Link>
+          </div>
+        </header>
       <nav className={styles.nav}>
         <Link 
           href="/dashboard-page" 
@@ -35,6 +39,12 @@ export default function Header() {
           className={isActive('/tasks-page')}
         >
           Tasks
+        </Link>
+        <Link 
+          href="/board-tab-page" 
+          className={isActive('/board-tab-page')}
+        >
+          Board
         </Link>
       </nav>
       <input type="search" placeholder="Search" className={styles.searchInput} />
