@@ -85,7 +85,7 @@ export type Database = {
           task_desc: string | null
           task_id: string
           task_priority: Database["public"]["Enums"]["task_priority "] | null
-          task_status: Database["public"]["Enums"]["task_status"] | null
+          task_status: string | null
         }
         Insert: {
           blocker_task_ids?: string[] | null
@@ -98,7 +98,7 @@ export type Database = {
           task_desc?: string | null
           task_id?: string
           task_priority?: Database["public"]["Enums"]["task_priority "] | null
-          task_status?: Database["public"]["Enums"]["task_status"] | null
+          task_status?: string | null
         }
         Update: {
           blocker_task_ids?: string[] | null
@@ -111,7 +111,7 @@ export type Database = {
           task_desc?: string | null
           task_id?: string
           task_priority?: Database["public"]["Enums"]["task_priority "] | null
-          task_status?: Database["public"]["Enums"]["task_status"] | null
+          task_status?: string | null
         }
         Relationships: [
           {
@@ -134,6 +134,35 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "sprint"
             referencedColumns: ["sprint_id"]
+          },
+        ]
+      }
+      task_status: {
+        Row: {
+          created_at: string
+          proj_id: string | null
+          task_status_id: string
+          task_status_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          proj_id?: string | null
+          task_status_id?: string
+          task_status_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          proj_id?: string | null
+          task_status_id?: string
+          task_status_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_status_proj_id_fkey"
+            columns: ["proj_id"]
+            isOneToOne: false
+            referencedRelation: "project"
+            referencedColumns: ["proj_id"]
           },
         ]
       }
@@ -232,7 +261,6 @@ export type Database = {
     }
     Enums: {
       "task_priority ": "low" | "normal" | "high" | "critical"
-      task_status: "doing" | "blocked" | "done"
       user_team_role: "admin" | "member"
     }
     CompositeTypes: {

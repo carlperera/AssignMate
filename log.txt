@@ -1,0 +1,403 @@
+commit 1e1e5757208b3686305c7e3bc61d747b2974dd7d
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Thu Sep 12 12:47:55 2024 +1000
+
+    new directory struct
+
+commit cb7bb096571a172ca0d8af1aa83402ea510f641c
+Merge: 0edbf2d ecf0e1e
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Thu Sep 12 12:45:08 2024 +1000
+
+    resolve mc
+
+commit 0edbf2d61ee36f8155de70ce9b80251ccbbcaeee
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Thu Sep 12 12:32:25 2024 +1000
+
+    added backend functionality
+
+commit ecf0e1e29ba56003d70b5f163d71301fb284bc34
+Merge: a511c03 edf1062
+Author: kevintrann <ttkevin67@yahoo.com>
+Date:   Sun Sep 8 19:46:30 2024 +1000
+
+    Update tailwind.config.ts
+
+commit a511c03ca7814cfdd50f9e6f959d8a233d840cfd
+Author: kevintrann <ttkevin67@yahoo.com>
+Date:   Sun Sep 8 19:39:08 2024 +1000
+
+    Clicking on a project redirects to specific page
+    
+    Added redirecting to project specific page after clicking on project on project-page.
+
+commit fafe19d9a990274a81d17b154fb9214b160774d1
+Merge: 63c978b a912594
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Sun Sep 8 19:31:38 2024 +1000
+
+    resolve mc
+
+commit a9125941e391b33ed8124464d8580728268ffb68
+Merge: b372c38 edf1062
+Author: Jaden Mu <jadenmumu@gmail.com>
+Date:   Sun Sep 8 18:59:41 2024 +1000
+
+    Merge branch 'jaden-testing'
+
+commit edf1062ca762664f014f11fdafa2325a11410fb2
+Author: Jaden Mu <jadenmumu@gmail.com>
+Date:   Sun Sep 8 18:59:07 2024 +1000
+
+    fixed small typo error
+
+commit 63c978bda84675bb1197bcd89d50878a7fdfc064
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Fri Sep 6 23:34:28 2024 +1000
+
+    added task deletion functionality, fixed double-add bug
+
+commit 3b59761eabfef392fab9e07edebd0d8f3e589082
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Fri Sep 6 23:08:41 2024 +1000
+
+    add new task functionality and interface
+
+commit 1af77c0ee445fe2422da6b2dfb6f15a76a14e925
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Fri Sep 6 22:42:31 2024 +1000
+
+    added more initial tasks, move unassigned location, added 'add new task' button
+
+commit 09221a2d206be08cb55491b682ef74f8bc497e65
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Fri Sep 6 22:32:13 2024 +1000
+
+    adjusted column size, added all team members in columns by default
+
+commit 622b0c49b349977185daa18772aa0a02968e2eff
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Fri Sep 6 22:18:16 2024 +1000
+
+    re-added surrounding interface
+
+commit 8189f2618ddaf2a68c0e5aeb055225ee126c293e
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Fri Sep 6 22:17:04 2024 +1000
+
+    redone board to include teamMember sublists
+
+commit 321137f0e86e980ba1ccf51515ce7a2ed227efe1
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Fri Sep 6 21:24:58 2024 +1000
+
+    tasks stay when dragged and count updates
+
+commit 0fc0ccf7557d687bc5519e071086bff93c2baa66
+Author: Patrick <patrick.fitzgerald29@gmail.com>
+Date:   Fri Sep 6 21:00:09 2024 +1000
+
+    init kanban board at board-tab-page
+
+commit b372c3823c630b42bfe444d0dcbb407215cdcfcd
+Author: kevintrann <111445291+kevintrann@users.noreply.github.com>
+Date:   Thu Sep 5 22:49:19 2024 +1000
+
+    Delete app/project-pages  directory
+    
+    Deleted wonky naming directory
+
+commit cbbfec24140154f67d4ece70927089760301cd46
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Thu Sep 5 22:00:43 2024 +1000
+
+    fixed silly goose error with project-pages
+
+commit a4337f425302656532a3da916b95e5df1c502cd1
+Author: Jaden Mu <jadenmumu@gmail.com>
+Date:   Thu Sep 5 21:53:01 2024 +1000
+
+    Removed teams tab, re-structured projects to be grouped by teams and tasks include a drop down menu of all tasks within a project
+    
+    Uses dummy data
+
+commit db392f8b2fdff417f831915e785c38dca44c850d
+Merge: 7c3a08f d01daeb
+Author: Jaden Mu <jadenmumu@gmail.com>
+Date:   Thu Sep 5 20:19:51 2024 +1000
+
+    Merge branch 'jaden-testing' of https://github.com/carlperera/AssignMate into jaden-testing
+
+commit d01daebb1ae392b13c8ebefbe4207676ca699742
+Author: jadenn1 <jadenmumu@gmail.com>
+Date:   Thu Sep 5 20:16:33 2024 +1000
+
+    Refactored files into correct directories
+
+commit 1d1ae4841c7db2b591e00167c535dc9ed52654da
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Thu Sep 5 13:13:49 2024 +1000
+
+    new app router structure finalised
+
+commit 478ef804a6b4b704ab18408396762b7f505124c4
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Wed Sep 4 21:28:45 2024 +1000
+
+    rechanged enviro file
+
+commit afb25e802f16738074b8f19f0442573f67cf1e4f
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Wed Sep 4 21:14:24 2024 +1000
+
+    rechanged enviro file
+
+commit b911f2eea39e245ad8f5ad57f336ef9fd716c277
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Wed Sep 4 20:37:06 2024 +1000
+
+    changed something for enviro variables
+
+commit c4fd02344df5068a97c2bd2d8505d247f2f03184
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Wed Sep 4 20:26:49 2024 +1000
+
+    try setting environment variables in build process
+
+commit 9ad6320015eb2ed1da85f304cddf3e3c90d6aa42
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Tue Sep 3 10:23:39 2024 +1000
+
+    fixed jest to passWithNotTests i
+
+commit 14e0edb3fa075a8845becd19925071f6f5dfbaeb
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Tue Sep 3 10:20:33 2024 +1000
+
+    added es lint config fixes
+
+commit c239c55ac2db757cac691345975d0cb810cfac76
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Mon Sep 2 21:55:47 2024 +1000
+
+    updated github workflow file
+
+commit 155cace2f6249401441fa6e212016d1f8efe1ac5
+Author: Carl Perera <carl7perera@gmail.com>
+Date:   Mon Sep 2 21:24:10 2024 +1000
+
+    added new packages for eslint, jest
+
+commit d7dfb16f0ad665c73b9acc9ecabe5a7fbf353e0d
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Sat Aug 31 21:20:01 2024 +1000
+
+    fixed the dependency issue with tailwindcss-animate
+
+commit 7c3a08f680910aa3ba3426bd7b62412487ec8883
+Merge: 44835ec 230b4b7
+Author: Jaden Mu <jadenmumu@gmail.com>
+Date:   Mon Aug 19 23:05:11 2024 +1000
+
+    Merge branch 'jaden-testing' of https://github.com/carlperera/AssignMate into jaden-testing
+
+commit 62063fa0b5f29c14b3336c41f5828b87673b0793
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Thu Aug 15 13:55:18 2024 +1000
+
+    adjusted packages
+
+commit 230b4b7aee60daeb931cdac70bc8472ee6af5f4f
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Thu Aug 15 13:39:32 2024 +1000
+
+    added mui imports back to page.tsx
+
+commit a298a8d93820b353f0a4373142334a46127a79d5
+Merge: 9408b91 fc956e8
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Thu Aug 15 13:39:05 2024 +1000
+
+    resolve carl and jaden merge conflict. jaden to adjust directory structure
+
+commit 9408b9131b98cce3211905ca816c63756ae79aa7
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Thu Aug 15 13:20:51 2024 +1000
+
+    package.json change
+
+commit fc956e8bf9cd5c702411c10ff6aa508b132c7706
+Author: jadenn1 <jadenmumu@gmail.com>
+Date:   Thu Aug 15 13:19:35 2024 +1000
+
+    added homescreen dashboard stuff
+
+commit 5217efec81938a4c088944aa028d389ded4decad
+Merge: 86d5fc6 ef2fc8f
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Thu Aug 15 13:18:44 2024 +1000
+
+    Merge branch 'main' of https://github.com/carlperera/AssignMate
+
+commit 86d5fc6201dbad2f17bd86615980b362eb666aad
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Thu Aug 15 13:17:58 2024 +1000
+
+    Add folders
+
+commit ef2fc8ff4afa00a9e3cfea09ff2c4e72febf8555
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Wed Aug 14 22:31:22 2024 +1000
+
+    adjusted projectName style to make visible
+
+commit 837e476803f5d5a66315dd988bc8f6e769efd557
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Wed Aug 14 22:09:47 2024 +1000
+
+    your tasks tab draft done
+
+commit f782a608e4bef59a633253acfb9e4ba5cf909f55
+Merge: f858442 1134ab2
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Wed Aug 14 15:56:11 2024 +1000
+
+    resolve merge conflicts
+
+commit f8584427cf05326a28fedbc7243ceb0c800f9d35
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Wed Aug 14 15:48:18 2024 +1000
+
+    in progress
+
+commit 1134ab218f0ce603a7961ab65145e969757f2b5e
+Author: kevintrann <ttkevin67@yahoo.com>
+Date:   Mon Aug 12 21:15:33 2024 +1000
+
+    Refactoring directories and completely removed previous routing
+    
+    Refactored all pages under one directory and removed the previous routing for /teams /projects and /tasks
+
+commit 44835ec59268873e4f2b68bfbc168220d61927cc
+Merge: 30f8879 4fc0004
+Author: Jaden Mu <jadenmumu@gmail.com>
+Date:   Mon Aug 12 17:47:10 2024 +1000
+
+    Merge branch 'jaden-testing' of https://github.com/carlperera/AssignMate into jaden-testing
+
+commit 30f8879acedf1d343f4750033db5c5f9d58fd943
+Author: Jaden Mu <jadenmumu@gmail.com>
+Date:   Mon Aug 12 17:46:24 2024 +1000
+
+    Added an add team button
+
+commit 4fc00040efe4c3718d6ecec7f3eeec46f750f058
+Author: kevintrann <ttkevin67@yahoo.com>
+Date:   Mon Aug 12 17:45:32 2024 +1000
+
+    Changed routing to SPA and minor changes to UI
+    
+    Header components and UI components changed. No longer uses links to redirect to different pages and is now a single page application.
+
+commit 93efcbce98b5f7c111d9430df93d1fbff518d2db
+Merge: e63ffb5 ad27857
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Mon Aug 12 17:42:23 2024 +1000
+
+    resolve merge conflicts
+
+commit e63ffb5fc911626a15189d346d96c43f8dfbf0e6
+Author: patrickfitzgerald <patrick.fitzgerald29@gmail.com>
+Date:   Mon Aug 12 16:50:23 2024 +1000
+
+    taskList component
+
+commit ad2785744dd08b2179421744a8f26946020e302b
+Author: Jaden Mu <jadenmumu@gmail.com>
+Date:   Mon Aug 12 16:43:32 2024 +1000
+
+    Implemented sliding panel feature when a project card is clicked
+
+commit 6f1d232cada7d67bdaa1bb1d151def6d760cf2d7
+Author: kevintrann <ttkevin67@yahoo.com>
+Date:   Thu Aug 8 22:09:52 2024 +1000
+
+    Implemented routing and UI changes
+    
+    Added routing between the teams, projects, tasks and home pages. Implemented minor changes to the UI.
+
+commit c7b3fa882c8bdaf8479626f04966ed9efa317c91
+Author: jadenn1 <jadenmumu@gmail.com>
+Date:   Thu Aug 8 14:17:04 2024 +1000
+
+    Updated main page layout
+
+commit 56bdc121cf66f2f5c41378dbca3593d2a0d09861
+Author: jadenn1 <jadenmumu@gmail.com>
+Date:   Thu Aug 8 13:57:12 2024 +1000
+
+    Created styles directory and style files for each component. Formatted the main page
+
+commit 14c6f9b15212a9ea122524c436805b36282d0af7
+Author: jadenn1 <jadenmumu@gmail.com>
+Date:   Thu Aug 8 13:10:01 2024 +1000
+
+    Restructured app.tsx into components, and created a components directory
+
+commit 67f0bff64e91c20adb6c9c2e51e0c15c564103b8
+Merge: 0b10934 243de1a
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Thu Aug 8 12:33:30 2024 +1000
+
+    Merge branch 'main' of https://github.com/carlperera/AssignMate
+    dk# the commit.
+
+commit 0b109346669c7e99ca77c4608905b972a430f2ab
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Thu Aug 8 12:30:21 2024 +1000
+
+    Added supabase client
+
+commit 243de1a998225b4e86d537fb36a07d7f21d4d4bd
+Author: carlperera <95553579+carlperera@users.noreply.github.com>
+Date:   Thu Aug 8 12:28:24 2024 +1000
+
+    Update README.md
+
+commit 0014af872b5393308b77e55bea135f48e6fb2f8a
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Thu Aug 8 12:12:09 2024 +1000
+
+    Added supabase init
+
+commit 6462dd10d459e714416af794a31b45ce5bddfeb6
+Author: carlperera <95553579+carlperera@users.noreply.github.com>
+Date:   Tue Aug 6 22:44:55 2024 +1000
+
+    Create nextjs.yml
+
+commit 83dbd92b24fc32e5a33095bfaecc1eaae1e11de4
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Tue Aug 6 22:41:35 2024 +1000
+
+    removed src directory and moved app directory out from there
+
+commit 4ebc9a1d5aad192f9472918c7f7002ed1dfbb35b
+Merge: a68bdd9 e9f8a02
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Tue Aug 6 22:39:48 2024 +1000
+
+    Merge branch 'main' of https://github.com/carlperera/AssignMate
+
+commit a68bdd99a78af6b7c92fd0fca1fd04e4aa06c225
+Author: Carl Perera <cper0023@student.monash.edu>
+Date:   Tue Aug 6 22:28:27 2024 +1000
+
+    Initial commit from Create Next App
+
+commit e9f8a02a33a93952d7e2a0d6774cd7ace5dbe53e
+Author: carlperera <95553579+carlperera@users.noreply.github.com>
+Date:   Thu Jul 25 12:49:57 2024 +1000
+
+    Initial commit

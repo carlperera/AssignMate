@@ -4,6 +4,7 @@ import { Tables } from '../../app/supabase/database.types';
 export type Project = Tables<'project'>;
 export type Sprint = Tables<'sprint'>;
 export type Task = Tables<'task'>;
+export type TaskStatus = Tables<'task_status'>;
 export type Team = Tables<'team'>;
 export type User = Tables<'user'>;
 export type UserTeam = Tables<'user_team'>;
