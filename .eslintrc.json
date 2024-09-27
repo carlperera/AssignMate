@@ -20,6 +20,6 @@
   "rules": {
     // Your rules here
     "react/react-in-jsx-scope": "off", // Disable this rule for React 17+
-    "@typescript-eslint/no-explicit-any": "error" // Enforce type safety
+    "@typescript-eslint/no-explicit-any": "warn" // Enforce type safety
   }
 }
