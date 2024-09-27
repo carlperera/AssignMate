@@ -7,45 +7,41 @@ export type UpdateRowResponse = PostgrestError | null;
 export type CreateRowResponse = PostgrestError | null;
 export type FetchUserIdResponse = string | null;
 
+export type DatabaseSingleResponse<T> = {
+  data: T | null;
+  error: PostgrestError | null;
+}
+
+export type DatabaseMultiResponse<T> = {
+  data: T[] | null;
+  error: PostgrestError | null;
+}
+
 //  ---------------------------------------------------------------- PROJECT  ----------------------------------------------------------------
-export type FetchProjectResponse = {
-    data: Project[] | null;
-    error: any; // Replace with a more specific type if needed
-  };
+export type ProjectMultiResponse = DatabaseMultiResponse<Project>
+export type ProjectSingleResponse = DatabaseSingleResponse<Project>
 
 //  ---------------------------------------------------------------- SPRINT  ----------------------------------------------------------------
-export type FetchSprintResponse = {
-    data: Sprint[] | null;
-    error: any; // Replace with a more specific type if needed
-};
+export type SprintMultiResponse = DatabaseMultiResponse<Sprint>
+export type SprintSingleResponse = DatabaseSingleResponse<Sprint>
 
 //  ---------------------------------------------------------------- TASK  ----------------------------------------------------------------
-export type FetchTasksResponse = {
-  data: Task[] | null;
-  error: any;
-}
+export type TaskMultiResponse = DatabaseMultiResponse<Task>
+export type TaskSingleResponse = DatabaseSingleResponse<Task>
 
 //  ---------------------------------------------------------------- TASK STATUS  ----------------------------------------------------------------
-export type FetchTaskStatusResponse = {
-  data: TaskStatus[] | null;
-  error: any;
-}
+export type TaskStatusMultiResponse = DatabaseMultiResponse<TaskStatus>
+export type TaskStatusSingleResponse = DatabaseSingleResponse<TaskStatus>
 
 
 // ---------------------------------------------------------------- TEAM ----------------------------------------------------------------
-export type FetchTeamResponse = {
-  data: Team[] | null;
-  error: any;
-}
+export type TeamMultiResponse = DatabaseMultiResponse<Team>
+export type TeamSingleResponse = DatabaseSingleResponse<Team>
 
 // ---------------------------------------------------------------- USER ----------------------------------------------------------------
-export type FetchUserResponse = {
-  data: User[] | null;
-  error: any;
-}
+export type UserMultiResponse = DatabaseMultiResponse<User>
+export type UserSingleResponse = DatabaseSingleResponse<User>
 
 // ---------------------------------------------------------------- USER TEAM ----------------------------------------------------------------
-export type FetchUserTeamResponse = {
-  data: UserTeam[] | null;
-  error: any;
-}
+export type UserTeamMultiResponse = DatabaseMultiResponse<UserTeam>
+export type UserTeamSingleResponse = DatabaseSingleResponse<UserTeam>

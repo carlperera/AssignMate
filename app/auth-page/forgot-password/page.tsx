@@ -1,7 +1,8 @@
-"use client"; // acccess from server to host 
-import { useRouter } from 'next/navigation' // app router 
+"use client";
+
+import { useRouter } from 'next/navigation';
 import supabase from '../../supabase/supabaseClient';
-import React, {useEffect} from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -10,40 +11,48 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function AuthPage() {
+export default function ForgotPasswordPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState({ type: '', content: '' });
 
-  const router = useRouter(); 
-  const HandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form from submitting normally
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setMessage({ type: '', content: '' });
 
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email') as string;
-    console.log(`${window.location.origin}`)
+    if (!email) {
+      setMessage({ type: 'error', content: 'Please enter your email address.' });
+      setIsLoading(false);
+      return;
+    }
 
     try {
-
-      const { data: signInData, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}`, 
-      })
-      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
 
       if (error) {
-        console.error('Error signing in:', error.message);
-        // Handle the error, e.g., show a message to the user
-        return;
+        setMessage({ type: 'error', content: error.message });
+      } else {
+        setMessage({ type: 'success', content: 'Password reset email sent. Please check your inbox.' });
+        setEmail('');
       }
-      // Handle successful sign-in, e.g., redirect the user or store the session
     } catch (err) {
       console.error('Unexpected error:', err);
-      // Handle unexpected errors
+      setMessage({ type: 'error', content: 'An unexpected error occurred. Please try again.' });
+    } finally {
+      setIsLoading(false);
     }
   };
-
-
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -59,45 +68,69 @@ export default function AuthPage() {
               alignItems: 'center',
             }}
           >
-            {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <LockOutlinedIcon />
-            </Avatar> */}
+            <IconButton
+              onClick={() => router.push('/')}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+
+          
             <Typography
               component="h1"
               variant="h3"
               sx={{
-                fontFamily: 'Rounded Mplus 1c, sans-serif', // Set the font family
-                textAlign: 'left', // Align text to the left
+                fontFamily: 'Rounded Mplus 1c, sans-serif',
+                textAlign: 'left',
                 color: 'purple',
-                width: '100%'
+                width: '100%',
+                mb: 4,
               }}
             >
               Forgot Password
             </Typography>
-            
 
-            <Box component="form" noValidate onSubmit={HandleSubmit} sx={{ mt: 1 }}>
-              
+            {message.content && (
+              <Alert severity={message.type as 'error' | 'success'} sx={{ width: '100%', mb: 2 }}>
+                {message.content}
+              </Alert>
+            )}
+
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
                 required
                 fullWidth
                 id="email"
-                label="Email"
+                label="Email Address"
                 name="email"
-                autoComplete="test@gmail.com"
+                autoComplete="email"
                 autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 3, mb: 2, height: 56 }}
+                disabled={isLoading}
               >
-                Send Reset Email
+                {isLoading ? <CircularProgress size={24} /> : 'Send Reset Email'}
               </Button>
-              
-            
+              <Button
+                fullWidth
+                variant="text"
+                onClick={() => router.push('/')}
+                sx={{ mt: 1 }}
+              >
+                Back to Login
+              </Button>
             </Box>
           </Box>
         </Grid>
@@ -107,9 +140,7 @@ export default function AuthPage() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage:
-              'url("/static/images/templates/templates-images/sign-in-side-bg.png")',
-
+            backgroundImage: 'url("/static/images/templates/templates-images/sign-in-side-bg.png")',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
             backgroundSize: 'cover',

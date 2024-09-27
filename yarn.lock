@@ -4331,9 +4331,9 @@ merge2@^1.3.0, merge2@^1.4.1:
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
 micromatch@^4.0.4, micromatch@^4.0.5:
-  version "4.0.7"
-  resolved "https://registry.npmjs.org/micromatch/-/micromatch-4.0.7.tgz"
-  integrity sha512-LPP/3KorzCwBxfeUuZmaR6bG2kdeHSbe0P2tY3FLRU4vYrjYz5hI4QZwV0njUx3jeuKe67YukQ1LSPZBKDqO/Q==
+  version "4.0.8"
+  resolved "https://registry.npmjs.org/micromatch/-/micromatch-4.0.8.tgz"
+  integrity sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==
   dependencies:
     braces "^3.0.3"
     picomatch "^2.3.1"
@@ -5351,9 +5351,9 @@ set-function-name@^2.0.1, set-function-name@^2.0.2:
     has-property-descriptors "^1.0.2"
 
 shadcn-ui@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.npmjs.org/shadcn-ui/-/shadcn-ui-0.9.0.tgz"
-  integrity sha512-Um4DldJaSk89OAgcT5aa2fU7euxg5Gzn8qOL8R4+I7UhFAMm3RyjECCYF05wP4Dfe/rFxh4g22LBSbieeE5Pgg==
+  version "0.9.1"
+  resolved "https://registry.npmjs.org/shadcn-ui/-/shadcn-ui-0.9.1.tgz"
+  integrity sha512-YiC84GDih/9xeeY3xcucJbbd3ocLAvM6099JgeN31OUHgkjKlLMP5wn8IG2IYK1FQpu9oL9xc+bxiD3viz2X9Q==
   dependencies:
     "@antfu/ni" "^0.21.4"
     "@babel/core" "^7.22.1"

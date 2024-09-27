@@ -9,4 +9,6 @@ if (typeof supabaseUrl !== 'string' || typeof supabaseAnonKey !== 'string') {
   throw new Error(`Supabase URL and Key are required. ENV: ${process.env.NODE_ENV}`)
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
+const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+
+export default supabase;

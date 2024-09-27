@@ -1,8 +1,8 @@
-"use client"; // acccess from server to host 
-import { useRouter } from 'next/navigation' // app router 
+"use client";
 
+import { useRouter } from 'next/navigation';
 import supabase from '../../supabase/supabaseClient';
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -11,49 +11,98 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { 
+  getCurrentUserId,
+  createUser,
+} from '../../supabase/backendFunctions';
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function AuthPage() {
-  
   const router = useRouter();
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [error, setError] = useState('');
 
-  const HandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form from submitting normally
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
 
-    // extract form information (email and password)
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email') as string;
-    const password = data.get('password') as string;
+  const validateForm = () => {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('All fields are required');
+      return false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return false;
+    }
+    return true;
+  };
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError('');
+
+    if (!validateForm()) return;
 
     try {
-
-      const { data: signInData, error } = await supabase.auth.signUp({
-        email,
-        password,
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+          }
+        }
       });
 
       if (error) {
-        console.error('Error signing in:', error.message);
-        // Handle the error, e.g., show a message to the user
+        setError(error.message);
         return;
       }
 
-      const { user, session } = signInData;
+      if (data.user) {
+        console.log('User signed up:', data.user);
+        
+        const userId = await getCurrentUserId();
+        if (!userId) {
+          return { success: false, error: "No user is currently logged in", teamId: null };
+        }
 
-      console.log('User signed in:', user);
-      console.log('Session:', session);
-      router.push('../dashboard-page/')
-      // Handle successful sign-in, e.g., redirect the user or store the session
+        // Step 2: Insert user data into the 'user' table
+        const { error: insertError } = await createUser(
+                                                        userId, 
+                                                        formData.firstName,
+                                                      formData.lastName)
+
+        if (insertError) {
+          console.error('Error inserting user data:', insertError);
+          setError('User account created, but there was an error saving additional details. Please contact support.');
+          return;
+        }
+
+        // If everything is successful, redirect to dashboard
+        router.push('../dashboard-page/');
+      }
     } catch (err) {
       console.error('Unexpected error:', err);
-      // Handle unexpected errors
+      setError('An unexpected error occurred. Please try again.');
     }
   };
-
-
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -69,24 +118,33 @@ export default function AuthPage() {
               alignItems: 'center',
             }}
           >
-            {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <LockOutlinedIcon />
-            </Avatar> */}
+            <IconButton
+              onClick={() => router.push('/')}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+
             <Typography
               component="h1"
               variant="h3"
               sx={{
-                fontFamily: 'Rounded Mplus 1c, sans-serif', // Set the font family
-                textAlign: 'left', // Align text to the left
+                fontFamily: 'Rounded Mplus 1c, sans-serif',
+                textAlign: 'left',
                 color: 'purple',
                 width: '100%'
               }}
             >
               Sign Up
             </Typography>
-            
 
-            <Box component="form" noValidate onSubmit={HandleSubmit} sx={{ mt: 1 }}>
+            {error && <Alert severity="error" sx={{ mt: 2, width: '100%' }}>{error}</Alert>}
+
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 required
@@ -94,8 +152,10 @@ export default function AuthPage() {
                 id="firstName"
                 label="First Name"
                 name="firstName"
-                autoComplete="John Applebottoms"
+                autoComplete="given-name"
                 autoFocus
+                value={formData.firstName}
+                onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -104,8 +164,9 @@ export default function AuthPage() {
                 id="lastName"
                 label="Last Name"
                 name="lastName"
-                autoComplete="John Applebottoms"
-                autoFocus
+                autoComplete="family-name"
+                value={formData.lastName}
+                onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -114,8 +175,9 @@ export default function AuthPage() {
                 id="email"
                 label="Email"
                 name="email"
-                autoComplete="test@gmail.com"
-                autoFocus
+                autoComplete="email"
+                value={formData.email}
+                onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -125,7 +187,9 @@ export default function AuthPage() {
                 label="Password"
                 type="password"
                 id="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
+                value={formData.password}
+                onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -135,7 +199,8 @@ export default function AuthPage() {
                 label="Confirm Password"
                 type="password"
                 id="confirmPassword"
-                autoComplete="current-password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
               />
               <Button
                 type="submit"
@@ -143,10 +208,8 @@ export default function AuthPage() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                Sign Up
               </Button>
-              
-            
             </Box>
           </Box>
         </Grid>
@@ -156,9 +219,7 @@ export default function AuthPage() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage:
-              'url("/static/images/templates/templates-images/sign-in-side-bg.png")',
-
+            backgroundImage: 'url("/static/images/templates/templates-images/sign-in-side-bg.png")',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
             backgroundSize: 'cover',
