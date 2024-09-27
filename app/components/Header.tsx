@@ -38,7 +38,7 @@ export default function Header() {
           href="/tasks-page" 
           className={isActive('/tasks-page')}
         >
-          Tasks
+          All Tasks
         </Link>
         <Link 
           href="/board-tab-page" 
