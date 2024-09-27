@@ -147,6 +147,7 @@ return (
         {/* sidebar */}
         <aside className="w-64 bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0">
           <div className="p-4 space-y-2">
+            <h1 className="text-2xl font-bold mb-4">*Project Name*</h1>
             <button className="w-full text-left py-2 px-4 bg-purple-600 text-white rounded">Board</button>
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meetings</button>
             <button className="w-full text-left py-2 px-4 hover:bg-gray-100 rounded">Meeting Scheduler</button>

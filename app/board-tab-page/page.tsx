@@ -9,7 +9,7 @@ const initialData: BoardData = {
         id: 'cp',
         name: 'Carl Perera',
         tasks: [
-          { id: '1', title: 'Implement user authentication', tag: 'feature', assignee: 'cp', dueDate: '2024-10-15' },
+          { id: '1', title: 'Implement user authentication', tag: 'feature', assignee: 'cp', dueDate: '2024-09-29' },
           { id: '2', title: 'Design landing page', tag: 'design', assignee: 'cp' },
         ],
       },
@@ -17,7 +17,7 @@ const initialData: BoardData = {
         id: 'pf',
         name: 'Patrick Fitzgerald',
         tasks: [
-          { id: '3', title: 'Set up CI/CD pipeline', tag: 'devops', assignee: 'pf', dueDate: '2024-10-20' },
+          { id: '3', title: 'Set up CI/CD pipeline', tag: 'devops', assignee: 'pf', dueDate: '2024-09-26' },
         ],
       },
       {
