@@ -261,6 +261,15 @@ export const fetchProjectTaskStatusById = async (taskStatusId: string): Promise<
     return { data, error }
   }
 
+export const createProjectTaskStatus = async (projectId: string, newStatusName: string): Promise<ProjectTaskStatusSingleResponse> => {
+  const { data, error } = await supabase
+    .from('project_task_status')
+    .insert({ proj_id: projectId, proj_status_name: newStatusName })
+    .select()
+    .single()
+  return { data, error }
+}
+  
 export const updateTaskStatusName = async (taskStatusId: string, newTaskStatusName: string): Promise<ProjectTaskStatusMultiResponse> => {
     const { data, error } = await supabase
       .from('project_task_status')

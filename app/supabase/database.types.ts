@@ -44,27 +44,27 @@ export type Database = {
       project_task_status: {
         Row: {
           created_at: string
-          id: number
           proj_id: string | null
           proj_status_desc: string | null
           proj_status_name: string | null
           proj_status_order: number
+          project_task_status_id: string
         }
         Insert: {
           created_at?: string
-          id?: number
           proj_id?: string | null
           proj_status_desc?: string | null
           proj_status_name?: string | null
           proj_status_order?: number
+          project_task_status_id?: string
         }
         Update: {
           created_at?: string
-          id?: number
           proj_id?: string | null
           proj_status_desc?: string | null
           proj_status_name?: string | null
           proj_status_order?: number
+          project_task_status_id?: string
         }
         Relationships: [
           {

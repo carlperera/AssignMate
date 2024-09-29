@@ -2,24 +2,20 @@ import React from "react";
 import styles from '../styles/TaskItem.module.css';
 
 interface TaskItemProps {
-  name: string;
-  tags: string[];
-  description: string;
+  id: string;
+  title: string;
+  tag?: string;
+  dueDate?: string;
+  assignee: string | null;
 }
 
-export default function TaskItem({ name, tags, description }: TaskItemProps) {
+export default function TaskItem({ id, title, tag, dueDate, assignee }: TaskItemProps) {
   return (
     <div className={styles.taskItem}>
-      <h3 className={styles.name}>{name}</h3>
-      <div className={styles.tags}>
-        {tags.map((tag, index) => (
-          <span key={index} className={styles.tag}>
-            {tag}
-          </span>
-        ))}
-      </div>
-      <p className={styles.description}>{description}</p>
+      <h3 className={styles.title}>{title}</h3>
+      {tag && <span className={styles.tag}>{tag}</span>}
+      {dueDate && <p className={styles.dueDate}>Due: {new Date(dueDate).toLocaleDateString()}</p>}
+      {assignee && <p className={styles.assignee}>Assignee: {assignee}</p>}
     </div>
   );
 }
-

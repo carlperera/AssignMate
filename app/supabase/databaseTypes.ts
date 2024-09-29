@@ -35,3 +35,6 @@ export enum AddUserNameToTeam {
     invalidUserName = "invalidUserName",
     error = "error",
 }
+
+
+export type TaskPriority = "low" | "normal" | "high" | "critical" | null;

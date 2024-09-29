@@ -1,114 +1,119 @@
-"use client";
-import { useEffect, useState } from 'react';
-import { ClientKanbanWrapper, BoardData } from '../components/ClientKanbanWrapper';
-import { fetchTasksForProject, fetchTaskStatusById } from '../supabase/backendFunctions';
-import { Task, TaskStatus } from '../supabase/databaseTypes';
+// import { ClientKanbanWrapper, BoardData } from '../components/ClientKanbanWrapper';
 
-export default function BoardTabPage() {
-  const [boardData, setBoardData] = useState<BoardData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const projectId = 'your-project-id'; // Replace with actual project ID
-        const { data: tasks, error: tasksError } = await fetchTasksForProject(projectId);
+// const initialData: BoardData = {
+//   todo: {
+//     title: 'To Do',
+//     teamMembers: [
+//       {
+//         id: 'cp',
+//         name: 'Carl Perera',
+//         tasks: [
+//           { id: '1', title: 'Implement user authentication', tag: 'feature', assignee: 'cp', dueDate: '2024-09-29' },
+//           { id: '2', title: 'Design landing page', tag: 'design', assignee: 'cp' },
+//         ],
+//       },
+//       {
+//         id: 'pf',
+//         name: 'Patrick Fitzgerald',
+//         tasks: [
+//           { id: '3', title: 'Set up CI/CD pipeline', tag: 'devops', assignee: 'pf', dueDate: '2024-09-26' },
+//         ],
+//       },
+//       {
+//         id: 'jm',
+//         name: 'Jaden Mu',
+//         tasks: [
+//           { id: '4', title: 'Create API documentation', tag: 'documentation', assignee: 'jm' },
+//         ],
+//       },
+//       {
+//         id: 'kt',
+//         name: 'Kevin Tran',
+//         tasks: [
+//           { id: '5', title: 'Optimize database queries', tag: 'performance', assignee: 'kt', dueDate: '2024-10-18' },
+//         ],
+//       },
+//     ],
+//     unassignedTasks: [
+//       { id: '6', title: 'Write unit tests', tag: 'testing', assignee: null },
+//       { id: '7', title: 'Research new technologies', tag: 'research', assignee: null, dueDate: '2024-11-01' },
+//     ],
+//   },
+//   inProgress: {
+//     title: 'In Progress',
+//     teamMembers: [
+//       {
+//         id: 'cp',
+//         name: 'Carl Perera',
+//         tasks: [
+//           { id: '8', title: 'Refactor codebase', tag: 'maintenance', assignee: 'cp', dueDate: '2024-10-25' },
+//         ],
+//       },
+//       {
+//         id: 'pf',
+//         name: 'Patrick Fitzgerald',
+//         tasks: [
+//           { id: '9', title: 'Implement real-time notifications', tag: 'feature', assignee: 'pf' },
+//         ],
+//       },
+//       {
+//         id: 'jm',
+//         name: 'Jaden Mu',
+//         tasks: [
+//           { id: '10', title: 'Create user onboarding flow', tag: 'ux', assignee: 'jm', dueDate: '2024-10-30' },
+//         ],
+//       },
+//       {
+//         id: 'kt',
+//         name: 'Kevin Tran',
+//         tasks: [
+//           { id: '11', title: 'Integrate third-party API', tag: 'integration', assignee: 'kt' },
+//         ],
+//       },
+//     ],
+//     unassignedTasks: [],
+//   },
+//   done: {
+//     title: 'Done',
+//     teamMembers: [
+//       {
+//         id: 'cp',
+//         name: 'Carl Perera',
+//         tasks: [
+//           { id: '12', title: 'Set up project repository', tag: 'setup', assignee: 'cp' },
+//         ],
+//       },
+//       {
+//         id: 'pf',
+//         name: 'Patrick Fitzgerald',
+//         tasks: [
+//           { id: '13', title: 'Create database schema', tag: 'database', assignee: 'pf' },
+//         ],
+//       },
+//       {
+//         id: 'jm',
+//         name: 'Jaden Mu',
+//         tasks: [
+//           { id: '14', title: 'Design system architecture', tag: 'architecture', assignee: 'jm' },
+//         ],
+//       },
+//       {
+//         id: 'kt',
+//         name: 'Kevin Tran',
+//         tasks: [
+//           { id: '15', title: 'Set up development environment', tag: 'setup', assignee: 'kt' },
+//         ],
+//       },
+//     ],
+//     unassignedTasks: [],
+//   },
+// };
 
-        if (tasksError) {
-          throw new Error(`Error fetching tasks: ${tasksError.message}`);
-        }
-
-        if (!tasks || tasks.length === 0) {
-          setBoardData({});
-          return;
-        }
-
-        const taskStatusMap = new Map<string, TaskStatus>();
-        for (const task of tasks) {
-          if (task.task_status && !taskStatusMap.has(task.task_status)) {
-            const { data: statusData, error: statusError } = await fetchTaskStatusById(task.task_status);
-            if (statusError) {
-              console.error(`Error fetching status for ${task.task_status}:`, statusError);
-            } else if (statusData && statusData.length > 0) {
-              taskStatusMap.set(task.task_status, statusData[0]);
-            }
-          }
-        }
-
-        const newBoardData: BoardData = {};
-        taskStatusMap.forEach((status, statusId) => {
-          newBoardData[statusId] = {
-            title: status.task_status_name || 'Unknown Status',
-            teamMembers: [],
-            unassignedTasks: [],
-          };
-        });
-
-        const teamMembers = new Map<string, { id: string; name: string }>();
-        tasks.forEach((task) => {
-          const statusId = task.task_status || 'unassigned';
-          if (!newBoardData[statusId]) {
-            newBoardData[statusId] = {
-              title: 'Unknown Status',
-              teamMembers: [],
-              unassignedTasks: [],
-            };
-          }
-
-          const newTask = {
-            id: task.task_id,
-            title: task.task_desc || 'Untitled Task',
-            tag: task.task_priority || undefined,
-            assignee: task.task_assignee,
-          };
-
-          if (task.task_assignee) {
-            if (!teamMembers.has(task.task_assignee)) {
-              teamMembers.set(task.task_assignee, { id: task.task_assignee, name: `User ${task.task_assignee}` });
-            }
-            const memberIndex = newBoardData[statusId].teamMembers.findIndex(m => m.id === task.task_assignee);
-            if (memberIndex === -1) {
-              newBoardData[statusId].teamMembers.push({
-                id: task.task_assignee,
-                name: `User ${task.task_assignee}`,
-                tasks: [newTask],
-              });
-            } else {
-              newBoardData[statusId].teamMembers[memberIndex].tasks.push(newTask);
-            }
-          } else {
-            newBoardData[statusId].unassignedTasks.push(newTask);
-          }
-        });
-
-        setBoardData(newBoardData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (isLoading) {
-    return <div>Loading board data...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!boardData || Object.keys(boardData).length === 0) {
-    return <div>No tasks found for this project.</div>;
-  }
-
-  return (
-    <div className="h-screen">
-      <ClientKanbanWrapper initialData={boardData} />
-    </div>
-  );
-}
+// export default function BoardTabPage() {
+//   return (
+//     <div className="h-screen overflow-hidden">
+//       <ClientKanbanWrapper initialData={initialData} />
+//     </div>
+//   );
+// }

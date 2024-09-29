@@ -6,14 +6,14 @@ import { DropResult } from '@hello-pangea/dnd';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
+import {TaskPriority} from '@/supabase/databaseTypes'
 
 export interface Task {
   id: string;
   title: string;
-  tag?: string;
+  tag?: TaskPriority;
   assignee: string | null;
-  dueDate?: string;
+  dueDate?: string | null;
 }
 
 export interface TeamMember {

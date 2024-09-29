@@ -38,33 +38,35 @@ interface Team {
 
 const ProjectCard = ({ id, name, color, onDelete, isAdmin }: Project & { onDelete: () => void, isAdmin: boolean }) => {
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer relative">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Folder className="mr-2" style={{ color }} />
-            <span>{name}</span>
-          </div>
-          {isAdmin && (
-            <IconButton
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(); }}
-              size="small"
-              style={{ 
-                color: '#ef4444',
-                padding: '4px',
-                marginRight: '-8px',
-                marginTop: '-8px'
-              }}
-            >
-              <X size={16} />
-            </IconButton>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">Project details</p>
-      </CardContent>
-    </Card>
+    <Link href={`/board-tab-page/${id}`} passHref>
+      <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer relative">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Folder className="mr-2" style={{ color }} />
+              <span>{name}</span>
+            </div>
+            {isAdmin && (
+              <IconButton
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(); }}
+                size="small"
+                style={{ 
+                  color: '#ef4444',
+                  padding: '4px',
+                  marginRight: '-8px',
+                  marginTop: '-8px'
+                }}
+              >
+                <X size={16} />
+              </IconButton>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Project details</p>
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
 
