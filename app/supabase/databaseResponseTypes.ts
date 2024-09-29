@@ -1,5 +1,5 @@
 import { PostgrestError } from '@supabase/supabase-js';
-import {Project, Sprint, Task, Team, User, UserTeam, TaskStatus, AuthUser, AddUserNameToTeam} from './databaseTypes';
+import {Project, Sprint, Task, Team, User, UserTeam, ProjectTaskStatus, AuthUser, AddUserNameToTeam} from './databaseTypes';
 import { checkNewTeamMember } from './backendFunctions';
 
 
@@ -35,9 +35,9 @@ export type SprintSingleResponse = DatabaseSingleResponse<Sprint>
 export type TaskMultiResponse = DatabaseMultiResponse<Task>
 export type TaskSingleResponse = DatabaseSingleResponse<Task>
 
-//  ---------------------------------------------------------------- TASK STATUS  ----------------------------------------------------------------
-export type TaskStatusMultiResponse = DatabaseMultiResponse<TaskStatus>
-export type TaskStatusSingleResponse = DatabaseSingleResponse<TaskStatus>
+//  ---------------------------------------------------------------- PROJECT TASK STATUS  ----------------------------------------------------------------
+export type ProjectTaskStatusMultiResponse = DatabaseMultiResponse<ProjectTaskStatus>
+export type ProjectTaskStatusSingleResponse = DatabaseSingleResponse<ProjectTaskStatus>
 
 
 // ---------------------------------------------------------------- TEAM ----------------------------------------------------------------

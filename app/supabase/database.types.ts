@@ -41,7 +41,7 @@ export type Database = {
           },
         ]
       }
-      project_status: {
+      project_task_status: {
         Row: {
           created_at: string
           id: number

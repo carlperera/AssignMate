@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { KanbanBoard } from '../Kanban';
+import { KanbanBoard } from './Kanban';
 import { DropResult } from '@hello-pangea/dnd';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';

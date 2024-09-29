@@ -17,8 +17,8 @@ import {
   SprintSingleResponse,
   TaskMultiResponse,
   TaskSingleResponse,
-  TaskStatusMultiResponse,
-  TaskStatusSingleResponse,
+  ProjectTaskStatusMultiResponse,
+  ProjectTaskStatusSingleResponse,
   TeamMultiResponse,
   TeamSingleResponse,
   UserMultiResponse,
@@ -251,33 +251,43 @@ export const deleteTask = async (taskId: string): Promise<DeleteRowResponse> => 
 
 
 // ---------------------------------------------------------------- TASK STATUS ----------------------------------------------------------------
-export const fetchTaskStatusById = async (taskStatusId: string): Promise<TaskStatusSingleResponse> => {
+export const fetchProjectTaskStatusById = async (taskStatusId: string): Promise<ProjectTaskStatusSingleResponse> => {
     const { data, error } = await supabase
-      .from('task_status')
+      .from('project_task_status')
       .select()
-      .eq('task_status_id', taskStatusId)
+      .eq('id', taskStatusId)
       .select()
       .single()
     return { data, error }
   }
 
-export const updateTaskStatusName = async (taskStatusId: string, newTaskStatusName: string): Promise<TaskStatusSingleResponse> => {
+export const updateTaskStatusName = async (taskStatusId: string, newTaskStatusName: string): Promise<ProjectTaskStatusMultiResponse> => {
     const { data, error } = await supabase
-      .from('task_status')
-      .update({ task_status_name: newTaskStatusName })
-      .eq('task_status_id', taskStatusId)
+      .from('project_task_status')
+      .update({ proj_status_name: newTaskStatusName })
+      .eq('id', taskStatusId)
       .select()
-      .single()
     return { data, error }
+}
+
+export const updateTaskStatusOrder = async (taskStatusId: string, newTaskStatusName: string): Promise<ProjectTaskStatusMultiResponse> => {
+  const { data, error } = await supabase
+    .from('project_task_status')
+    .update({ proj_status_name: newTaskStatusName })
+    .eq('id', taskStatusId)
+    .select()
+  return { data, error }
 }
 
 export const deleteTaskStatus = async (taskStatusId: string): Promise<DeleteRowResponse> => {
     const { error } = await supabase
-      .from('task_status')
+      .from('project_task_status')
       .delete()
-      .eq('task_status_id', taskStatusId)
+      .eq('id', taskStatusId)
     return error
 }
+
+
 
 // ---------------------------------------------------------------- TEAM ----------------------------------------------------------------
 
