@@ -41,6 +41,41 @@ export type Database = {
           },
         ]
       }
+      project_status: {
+        Row: {
+          created_at: string
+          id: number
+          proj_id: string | null
+          proj_status_desc: string | null
+          proj_status_name: string | null
+          proj_status_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          proj_id?: string | null
+          proj_status_desc?: string | null
+          proj_status_name?: string | null
+          proj_status_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          proj_id?: string | null
+          proj_status_desc?: string | null
+          proj_status_name?: string | null
+          proj_status_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_status_proj_id_fkey"
+            columns: ["proj_id"]
+            isOneToOne: false
+            referencedRelation: "project"
+            referencedColumns: ["proj_id"]
+          },
+        ]
+      }
       sprint: {
         Row: {
           created_at: string
@@ -134,35 +169,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "sprint"
             referencedColumns: ["sprint_id"]
-          },
-        ]
-      }
-      task_status: {
-        Row: {
-          created_at: string
-          proj_id: string | null
-          task_status_id: string
-          task_status_name: string | null
-        }
-        Insert: {
-          created_at?: string
-          proj_id?: string | null
-          task_status_id?: string
-          task_status_name?: string | null
-        }
-        Update: {
-          created_at?: string
-          proj_id?: string | null
-          task_status_id?: string
-          task_status_name?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "task_status_proj_id_fkey"
-            columns: ["proj_id"]
-            isOneToOne: false
-            referencedRelation: "project"
-            referencedColumns: ["proj_id"]
           },
         ]
       }
