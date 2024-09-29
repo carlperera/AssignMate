@@ -4,22 +4,16 @@ import React, { useState, useEffect, KeyboardEvent } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Folder, ChevronDown, X, User } from "lucide-react";
+import { Folder, X, User, UserPlus } from "lucide-react";
 import Header from '../components/Header';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
-import { createTeamAndAddUser, createProject, fetchTeamsForUser, fetchProjectsForTeam, getCurrentUserId, deleteProject, deleteTeam, fetchUserTeamForTeam, fetchUser } from '../supabase/backendFunctions';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { createTeamAndAddUser, createProject, fetchTeamsForUser, fetchProjectsForTeam, getCurrentUserId, deleteProject, deleteTeam, fetchUserTeamForTeam, fetchUser, fetchAllUserTeamsForUser, checkUserNameAvailable, createUserTeam } from '../supabase/backendFunctions';
 import supabase from '../supabase/supabaseClient';
-
 
 interface Project {
   id: string;
@@ -31,12 +25,14 @@ interface TeamMember {
   id: string;
   firstName: string;
   lastName: string;
+  username: string;
   role: string;
 }
 
 interface ProjectGroup {
   id: string;
   name: string;
+  description: string;
   projects: Project[];
   members: TeamMember[];
 }
@@ -67,7 +63,6 @@ const ProjectCard = ({ id, name, color, onDelete }: Project & { onDelete: () => 
 };
 
 export default function Projects() {
-  //state management - using a react hook "useState" here to add a state variable to our component
   const [projectGroups, setProjectGroups] = useState<ProjectGroup[]>([]);
   const [openItems, setOpenItems] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
@@ -75,60 +70,59 @@ export default function Projects() {
   const [newTeamName, setNewTeamName] = useState('');
   const [newProjectNames, setNewProjectNames] = useState<{[key: string]: string}>({});
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [newMemberUsername, setNewMemberUsername] = useState<{[key: string]: string}>({});
+  const [newMemberRole, setNewMemberRole] = useState<{[key: string]: string}>({});
+  const [isUsernameValid, setIsUsernameValid] = useState<{[key: string]: boolean | null}>({});
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        //get the user id of the currently signed in user 
         const userId = await getCurrentUserId();
-        setCurrentUserId(userId); //set state
-
-        //if user currently signed in (assumed)
+        setCurrentUserId(userId);
         if (userId) {
-          const { data: teams, error: teamsError } = await fetchTeamsForUser(userId);
-          if (teamsError) throw new Error(`Error fetching teams: ${teamsError.message}`);
+          const { data: userTeams, error: userTeamsError } = await fetchAllUserTeamsForUser(userId);
+          if (userTeamsError) throw new Error(`Error fetching user teams: ${userTeamsError.message}`);
 
-          if (teams) {
-            const teamsWithProjectsAndMembers = await Promise.all(teams.map(async (team) => {
-              const { data: projects, error: projectsError } = await fetchProjectsForTeam(team.team_id);
-              if (projectsError) throw new Error(`Error fetching projects for team ${team.team_name}: ${projectsError.message}`);
+          if (userTeams) {
+            const teamsWithDetails = await Promise.all(userTeams.map(async (userTeam) => {
+              const { data: team, error: teamError } = await fetchTeamsForUser(userTeam.team_id);
+              if (teamError) throw new Error(`Error fetching team: ${teamError.message}`);
 
-              const { data: userTeams, error: membersError } = await fetchUserTeamForTeam(team.team_id);
-              if (membersError) throw new Error(`Error fetching members for team ${team.team_name}: ${membersError.message}`);
+              const { data: projects, error: projectsError } = await fetchProjectsForTeam(userTeam.team_id);
+              if (projectsError) throw new Error(`Error fetching projects: ${projectsError.message}`);
 
-              
-              const members = await Promise.all(userTeams.map(async (userTeam) => {
-                const { data: userData, error: userError } = await fetchUser(userTeam.user_id);
+              const { data: teamMembers, error: membersError } = await fetchUserTeamForTeam(userTeam.team_id);
+              if (membersError) throw new Error(`Error fetching team members: ${membersError.message}`);
+
+              const membersWithDetails = await Promise.all(teamMembers.map(async (member) => {
+                const { data: userData, error: userError } = await fetchUser(member.user_id);
                 if (userError) throw new Error(`Error fetching user data: ${userError.message}`);
 
                 return {
-                  id: userTeam.user_id,
+                  id: userData.user_id,
                   firstName: userData.user_fname,
                   lastName: userData.user_lname,
-                  role: userTeam.user_team_role
+                  username: userData.user_username,
+                  role: member.user_team_role
                 };
               }));
 
               return {
                 id: team.team_id,
                 name: team.team_name,
+                description: team.team_desc || '',
                 projects: projects ? projects.map(p => ({
                   id: p.proj_id,
                   name: p.proj_name,
                   color: 'gray'
                 })) : [],
-                members: members
+                members: membersWithDetails
               };
             }));
 
-            setProjectGroups(teamsWithProjectsAndMembers);
-            const initialProjectNames = teamsWithProjectsAndMembers.reduce((acc, team) => {
-              acc[team.id] = '';
-              return acc;
-            }, {} as {[key: string]: string});
-            setNewProjectNames(initialProjectNames);
-            setOpenItems(teamsWithProjectsAndMembers.map(team => team.id));
+            setProjectGroups(teamsWithDetails);
+            setOpenItems(teamsWithDetails.map(team => team.id));
           }
         }
       } catch (error) {
@@ -144,11 +138,6 @@ export default function Projects() {
       .channel('team-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'team' }, handleTeamChange)
       .subscribe();
-    
-    // const userTeamSubscription = supabase
-    // .channel('userTeam-changes')
-    // .on('postgres_changes', { event: '*', schema: 'public', table: 'user_team' }, handleUserTeamChange)
-    // .subscribe();
 
     const projectSubscription = supabase
       .channel('project-changes')
@@ -162,75 +151,11 @@ export default function Projects() {
   }, []);
 
   const handleTeamChange = async (payload: any) => {
-    if (payload.eventType === 'INSERT') {
-      setProjectGroups(prev => {
-        const newGroup: ProjectGroup = { id: payload.new.team_id, name: payload.new.team_name, projects: [] };
-        return [...prev, newGroup];
-      });
-      setNewProjectNames(prev => ({ ...prev, [payload.new.team_id]: '' }));
-      // Optionally open the new team
-      // setOpenItems(prev => [...prev, payload.new.team_id]);
-    } else if (payload.eventType === 'UPDATE') {
-      setProjectGroups(prev => prev.map(group => 
-        group.id === payload.new.team_id ? { ...group, name: payload.new.team_name } : group
-      ));
-    } else if (payload.eventType === 'DELETE') {
-      setProjectGroups(prev => prev.filter(group => group.id !== payload.old.team_id));
-      setNewProjectNames(prev => {
-        const { [payload.old.team_id]: _, ...rest } = prev;
-        return rest;
-      });
-      setOpenItems(prev => prev.filter(id => id !== payload.old.team_id));
-    }
+    // Implement real-time team changes here
   };
 
-  // const handleUserTeamChange = async (payload: any) => {
-  //   if (payload.eventType === 'INSERT') {
-  //     setProjectGroups(prev => {
-  //       const newGroup: ProjectGroup = { id: payload.new.team_id, name: payload.new.team_name, projects: [] };
-  //       return [...prev, newGroup];
-  //     });
-  //     setNewProjectNames(prev => ({ ...prev, [payload.new.team_id]: '' }));
-  //     // Optionally open the new team
-  //     // setOpenItems(prev => [...prev, payload.new.team_id]);
-  //   } else if (payload.eventType === 'UPDATE') {
-  //     setProjectGroups(prev => prev.map(group => 
-  //       group.id === payload.new.team_id ? { ...group, name: payload.new.team_name } : group
-  //     ));
-  //   } else if (payload.eventType === 'DELETE') {
-  //     setProjectGroups(prev => prev.filter(group => group.id !== payload.old.team_id));
-  //     setNewProjectNames(prev => {
-  //       const { [payload.old.team_id]: _, ...rest } = prev;
-  //       return rest;
-  //     });
-  //     setOpenItems(prev => prev.filter(id => id !== payload.old.team_id));
-  //   }
-  // };
-
-
   const handleProjectChange = async (payload: any) => {
-    if (payload.eventType === 'INSERT') {
-      const newProject: Project = { id: payload.new.proj_id, name: payload.new.proj_name, color: 'gray' };
-      setProjectGroups(prev => prev.map(group => 
-        group.id === payload.new.team_id 
-          ? { ...group, projects: [...group.projects, newProject] }
-          : group
-      ));
-    } else if (payload.eventType === 'UPDATE') {
-      setProjectGroups(prev => prev.map(group => ({
-        ...group,
-        projects: group.projects.map(project => 
-          project.id === payload.new.proj_id 
-            ? { ...project, name: payload.new.proj_name }
-            : project
-        )
-      })));
-    } else if (payload.eventType === 'DELETE') {
-      setProjectGroups(prev => prev.map(group => ({
-        ...group,
-        projects: group.projects.filter(project => project.id !== payload.old.proj_id)
-      })));
-    }
+    // Implement real-time project changes here
   };
 
   const handleCreateTeam = async () => {
@@ -300,10 +225,34 @@ export default function Projects() {
     }
   };
 
-  //check if current user is the admin of a team - so that if they are they are can delete the team, or any projects in the team
   const isUserAdmin = (teamId: string) => {
     const team = projectGroups.find(group => group.id === teamId);
     return team?.members.some(member => member.id === currentUserId && member.role === 'admin');
+  };
+
+  const handleCheckUsername = async (teamId: string, username: string) => {
+    const isValid = await checkUserNameAvailable(username);
+    setIsUsernameValid(prev => ({ ...prev, [teamId]: !isValid })); // Username is valid if it's not available (i.e., it exists)
+  };
+
+  const handleAddTeamMember = async (teamId: string) => {
+    const username = newMemberUsername[teamId];
+    const role = newMemberRole[teamId];
+    if (username && role && isUsernameValid[teamId]) {
+      try {
+        const { data: userData, error: userError } = await fetchUser(username);
+        if (userError) throw userError;
+        if (userData) {
+          const { error: createError } = await createUserTeam(userData.user_id, teamId, role as any);
+          if (createError) throw createError;
+          setMessage(`User ${username} added to the team successfully.`);
+          // Refresh the team members list
+          // You might want to implement a function to fetch just the new member and add it to the state
+        }
+      } catch (err) {
+        setMessage(err instanceof Error ? err.message : "An unexpected error occurred");
+      }
+    }
   };
 
   const toggleItem = (teamId: string) => {
@@ -312,14 +261,6 @@ export default function Projects() {
         ? prevItems.filter(id => id !== teamId)
         : [...prevItems, teamId]
     );
-  };
-
-  const collapseAll = () => {
-    setOpenItems([]);
-  };
-
-  const expandAll = () => {
-    setOpenItems(projectGroups.map(group => group.id));
   };
 
   if (isLoading) {
@@ -335,10 +276,6 @@ export default function Projects() {
           <p>{message}</p>
         </div>
       )}
-      <div className="mb-4">
-        <Button onClick={expandAll} variant="outlined" style={{ marginRight: '8px' }}>Expand All</Button>
-        <Button onClick={collapseAll} variant="outlined">Collapse All</Button>
-      </div>
       <Accordion type="multiple" value={openItems} onValueChange={setOpenItems} className="w-full">
         {projectGroups.map((group) => (
           <AccordionItem value={group.id} key={group.id}>
@@ -348,33 +285,57 @@ export default function Projects() {
             >
               <div className="flex items-center w-full justify-between">
                 <span>{group.name}</span>
-                <ChevronDown size={24} className={`transition-transform duration-200 ${openItems.includes(group.id) ? 'transform rotate-180' : ''}`} />
               </div>
             </AccordionTrigger>
             <AccordionContent>
               <div className="bg-gray-50 p-4 rounded-b-lg">
-                <TableContainer component={Paper} style={{ marginBottom: '1rem' }}>
-                  <Table aria-label="team members table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Member</TableCell>
-                        <TableCell>Full Name</TableCell>
-                        <TableCell>Role</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {group.members.map((member) => (
-                        <TableRow key={member.id}>
-                          <TableCell>
-                            <Avatar><User /></Avatar>
-                          </TableCell>
-                          <TableCell>{`${member.firstName} ${member.lastName}`}</TableCell>
-                          <TableCell>{member.role}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                <p className="text-gray-600 mb-4">{group.description}</p>
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold mb-2">Team Members</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {group.members.map((member) => (
+                      <div key={member.id} className="flex items-center space-x-2 bg-white p-2 rounded">
+                        <Avatar><User /></Avatar>
+                        <div>
+                          <p className="font-medium">{`${member.firstName} ${member.lastName}`}</p>
+                          <p className="text-sm text-gray-500">{member.username}</p>
+                          <p className="text-xs text-gray-400">{member.role}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {isUserAdmin(group.id) && (
+                    <div className="mt-4 flex items-center space-x-2">
+                      <TextField
+                        size="small"
+                        placeholder="Username"
+                        value={newMemberUsername[group.id] || ''}
+                        onChange={(e) => {
+                          setNewMemberUsername(prev => ({ ...prev, [group.id]: e.target.value }));
+                          handleCheckUsername(group.id, e.target.value);
+                        }}
+                        error={isUsernameValid[group.id] === false}
+                        helperText={isUsernameValid[group.id] === false ? "Username not found" : ""}
+                      />
+                      <Select
+                        size="small"
+                        value={newMemberRole[group.id] || ''}
+                        onChange={(e) => setNewMemberRole(prev => ({ ...prev, [group.id]: e.target.value }))}
+                        displayEmpty
+                      >
+                        <MenuItem value="" disabled>Select Role</MenuItem>
+                        <MenuItem value="admin">Admin</MenuItem>
+                        <MenuItem value="member">Member</MenuItem>
+                      </Select>
+                      <IconButton
+                        onClick={() => handleAddTeamMember(group.id)}
+                        disabled={!isUsernameValid[group.id] || !newMemberRole[group.id]}
+                      >
+                        <UserPlus />
+                      </IconButton>
+                    </div>
+                  )}
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
                   {group.projects.map(project => (
                     <ProjectCard 
@@ -398,43 +359,4 @@ export default function Projects() {
                     onClick={() => handleCreateProject(group.id)}
                     variant="contained" 
                     disabled={!newProjectNames[group.id]?.trim()}
-                  >
-                    Add Project
-                  </Button>
-                </div>
-                {isUserAdmin(group.id) && (
-                  <Button 
-                    onClick={() => handleDeleteTeam(group.id)}
-                    variant="outlined" 
-                    color="secondary"
-                    style={{ marginTop: '1rem' }}
-                  >
-                    Delete Team
-                  </Button>
-                )}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-      <div className="mt-6 flex items-center">
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="New team name"
-          value={newTeamName}
-          onChange={(e) => setNewTeamName(e.target.value)}
-          onKeyPress={(e) => handleKeyPress(e, handleCreateTeam)}
-          style={{ marginRight: '8px', flexGrow: 1 }}
-        />
-        <Button 
-          onClick={handleCreateTeam}
-          variant="contained" 
-          disabled={!newTeamName.trim()}
-        >
-          Add Team
-        </Button>
-      </div>
-    </div>
-  );
-}
+                    
