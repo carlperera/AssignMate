@@ -1,11 +1,13 @@
 import { PostgrestError } from '@supabase/supabase-js';
-import {Project, Sprint, Task, Team, User, UserTeam, TaskStatus} from './databaseTypes';
+import {Project, Sprint, Task, Team, User, UserTeam, TaskStatus, AuthUser, AddUserNameToTeam} from './databaseTypes';
+import { checkNewTeamMember } from './backendFunctions';
 
 
 export type DeleteRowResponse = PostgrestError | null;
 export type UpdateRowResponse = PostgrestError | null;
 export type CreateRowResponse = PostgrestError | null;
 export type FetchUserIdResponse = string | null;
+export type FetchUserResponse = AuthUser | null;
 
 export type DatabaseSingleResponse<T> = {
   data: T | null;
@@ -16,6 +18,10 @@ export type DatabaseMultiResponse<T> = {
   data: T[] | null;
   error: PostgrestError | null;
 }
+
+export type EnumValues<T> = T[keyof T];
+export type CheckTeamMemberResponse = EnumValues<typeof AddUserNameToTeam>
+
 
 //  ---------------------------------------------------------------- PROJECT  ----------------------------------------------------------------
 export type ProjectMultiResponse = DatabaseMultiResponse<Project>
@@ -45,3 +51,4 @@ export type UserSingleResponse = DatabaseSingleResponse<User>
 // ---------------------------------------------------------------- USER TEAM ----------------------------------------------------------------
 export type UserTeamMultiResponse = DatabaseMultiResponse<UserTeam>
 export type UserTeamSingleResponse = DatabaseSingleResponse<UserTeam>
+

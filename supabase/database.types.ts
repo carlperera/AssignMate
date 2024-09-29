@@ -193,18 +193,21 @@ export type Database = {
           user_fname: string
           user_id: string
           user_lname: string | null
+          user_username: string
         }
         Insert: {
           created_at?: string | null
           user_fname: string
           user_id?: string
           user_lname?: string | null
+          user_username: string
         }
         Update: {
           created_at?: string | null
           user_fname?: string
           user_id?: string
           user_lname?: string | null
+          user_username?: string
         }
         Relationships: [
           {
@@ -246,7 +249,7 @@ export type Database = {
           {
             foreignKeyName: "user_team_user_id_fkey"
             columns: ["user_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["user_id"]
           },
@@ -257,7 +260,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_team_and_add_user: {
+        Args: {
+          p_team_name: string
+          p_user_id: string
+          p_user_role: string
+        }
+        Returns: {
+          team_id: string
+        }[]
+      }
     }
     Enums: {
       "task_priority ": "low" | "normal" | "high" | "critical"

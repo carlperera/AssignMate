@@ -17,6 +17,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { 
   getCurrentUserId,
   createUser,
+  checkUserNameAvailable,
 } from '../../supabase/backendFunctions';
 
 const defaultTheme = createTheme();
@@ -27,26 +28,41 @@ export default function AuthPage() {
     firstName: '',
     lastName: '',
     email: '',
+    username: '',
     password: '',
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData(prevData => ({
       ...prevData,
       [name]: value
     }));
+
+    if (name === 'username') {
+      if (value.length > 2) {
+        const isAvailable = await checkUserNameAvailable(value);
+        setUsernameAvailable(isAvailable);
+      } else {
+        setUsernameAvailable(null);
+      }
+    }
   };
 
   const validateForm = () => {
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.username || !formData.password || !formData.confirmPassword) {
       setError('All fields are required');
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      return false;
+    }
+    if (!usernameAvailable) {
+      setError('Username is not available');
       return false;
     }
     return true;
@@ -80,14 +96,17 @@ export default function AuthPage() {
         
         const userId = await getCurrentUserId();
         if (!userId) {
-          return { success: false, error: "No user is currently logged in", teamId: null };
+          setError("No user is currently logged in");
+          return;
         }
 
-        // Step 2: Insert user data into the 'user' table
+        // Insert user data into the 'user' table
         const { error: insertError } = await createUser(
-                                                        userId, 
-                                                        formData.firstName,
-                                                      formData.lastName)
+          userId, 
+          formData.firstName,
+          formData.lastName,
+          formData.username
+        );
 
         if (insertError) {
           console.error('Error inserting user data:', insertError);
@@ -183,6 +202,25 @@ export default function AuthPage() {
                 margin="normal"
                 required
                 fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                value={formData.username}
+                onChange={handleChange}
+                error={usernameAvailable === false}
+                helperText={
+                  usernameAvailable === false 
+                    ? "Username is not available" 
+                    : usernameAvailable === true 
+                      ? "Username is available" 
+                      : ""
+                }
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
                 name="password"
                 label="Password"
                 type="password"
@@ -207,6 +245,7 @@ export default function AuthPage() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                disabled={!usernameAvailable}
               >
                 Sign Up
               </Button>

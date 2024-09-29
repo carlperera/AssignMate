@@ -3,7 +3,8 @@ import { PostgrestError } from '@supabase/supabase-js';;
 import { Database } from '../../app/supabase/database.types'
 import { 
   Project, Sprint, Task, Team, User, UserTeam,
-  ProjectStatus, UserTeamRole
+  ProjectStatus, UserTeamRole,
+  AddUserNameToTeam,
 } from './databaseTypes'
 import { 
   FetchUserIdResponse,
@@ -24,10 +25,33 @@ import {
   UserSingleResponse,
   UserTeamMultiResponse,
   UserTeamSingleResponse,
+  FetchUserResponse,
+  CheckTeamMemberResponse,
 } from './databaseResponseTypes'
 
 import supabase from "./supabaseClient";
 
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ (AUTH) +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ---------------------------------------------------------------- (AUTH) USER ----------------------------------------------------------------
+export const getCurrentUserId = async (): Promise<FetchUserIdResponse> => {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user?.id ?? null
+}
+
+export const getCurrentAuthUser = async (): Promise<FetchUserResponse> => {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ (STORAGE) +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/* storage is used to store any images 
+1. user profile pictures
+2. any other media relevant to a team - could be the team picture or the project picture
+*/
+
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ (DATABASE) +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ---------------------------------------------------------------- PROJECT ----------------------------------------------------------------
 // (Create) - create project 
 export const createProject = async (projName: string, teamId: string): Promise<ProjectSingleResponse> => {
@@ -298,10 +322,12 @@ export const fetchTeamsForUser = async (userId: string): Promise<TeamMultiRespon
     // Step 1: Get all user_team's for the user from user_team table
     const { data: userTeams, error: userTeamError } = await fetchAllUserTeamsForUser(userId);
 
+    //error fetching the user's teams
     if (userTeamError) {
       return { data: null, error: userTeamError };
     }
-
+    
+    //user belongs to no teams right now 
     if (!userTeams || userTeams.length === 0) {
       return { data: [], error: null };
     }
@@ -342,20 +368,89 @@ export const fetchTeamsForUser = async (userId: string): Promise<TeamMultiRespon
 
 
 // ---------------------------------------------------------------- USER ----------------------------------------------------------------
-export const getCurrentUserId = async (): Promise<FetchUserIdResponse> => {
-  const { data: { user } } = await supabase.auth.getUser()
-  return user?.id ?? null
-}
 
-
-export const createUser = async (userId: string, userFirstName: string, userLastName: string): Promise<UserSingleResponse> => {
+export const createUser = async (userId: string, userFirstName: string, userLastName: string, userUserName: string): Promise<UserSingleResponse> => {
   const { data, error } = await supabase
     .from('user')
-    .insert({ user_id: userId, user_fname: userFirstName, user_lname: userLastName})
+    .insert({ user_id: userId, user_fname: userFirstName, user_lname: userLastName, user_username: userUserName})
     .select()
     .single()
   return { data, error }
 }
+
+export const fetchUser = async (userId: string): Promise<UserSingleResponse> => {
+  const { data, error } = await supabase
+    .from('user')
+    .select()
+    .eq('user_id', userId)
+    .single()
+  return { data, error }
+}
+
+export const fetchUserByUserName = async (userUserName: string): Promise<UserSingleResponse> => {
+  const { data, error } = await supabase
+    .from('user')
+    .select()
+    .eq('user_username', userUserName)
+    .single()
+  return { data, error }
+}
+
+export const fetchUserByUserNameMulti = async (userUserName: string): Promise<UserMultiResponse> => {
+  const { data, error } = await supabase
+    .from('user')
+    .select()
+    .eq('user_username', userUserName)
+  return { data, error }
+}
+
+export const checkUserNameAvailable = async (userUserName: string): Promise<boolean> => {
+  const { data, error } = await fetchUserByUserNameMulti(userUserName)
+
+  if (error) {
+    console.error('Error checking username availability:', error);
+    return false; // Assume username is not available if there's an error
+  }
+
+  if(!data) {
+    return false;
+  }
+
+  // If data is an empty array, the username is available
+  return data.length === 0;
+}
+
+//adding a new team member to a team
+export const checkNewTeamMember = async (newTeamMemberUserName: string, teamId: string): Promise<CheckTeamMemberResponse> => {
+  const { data: dataUser, error: errorUser } = await fetchUserByUserName(newTeamMemberUserName)
+
+  // Step 1: check if valid user
+  if (errorUser || !dataUser) {
+    return AddUserNameToTeam.invalidUserName
+  }
+
+  // Step 2: user_team rows for this user with userUserName - look up the user_team instances for this user and check if any of them have team_id == teamId
+  const {data: dataUserTeam, error: errorUserTeam} = await fetchAllUserTeamsForUser(dataUser.user_id)
+
+  if (errorUserTeam) {
+    return AddUserNameToTeam.error
+  }
+  
+  if (!dataUserTeam) {
+    console.log('No teams found for this user.');
+    return AddUserNameToTeam.validToAdd;  // If no teams found, user can be added to this team
+  }
+  
+  // Step 3: Process the fetched data (dataUserTeam is now a valid array of UserTeam objects)
+  const isAlreadyInTeam = dataUserTeam.some(team => team.team_id === teamId);
+  
+  if (isAlreadyInTeam) {
+    return AddUserNameToTeam.alreadyInTeam;
+  }
+
+  return AddUserNameToTeam.validToAdd;
+}
+
 
 // ---------------------------------------------------------------- USER TEAM ----------------------------------------------------------------
 export const createUserTeam = async (userId: string, teamId: string, userTeamRole: UserTeamRole): Promise<UserTeamSingleResponse> => {
@@ -366,6 +461,7 @@ export const createUserTeam = async (userId: string, teamId: string, userTeamRol
     .single()
   return { data, error }
 }
+
 
 
 export const fetchAllUserTeamsForUser = async (userId: string): Promise<UserTeamMultiResponse> => {
@@ -399,6 +495,7 @@ export const updateUserTeamRole = async (userId: string, teamId: string, newUser
   return { data, error }
 }
 
+//remove a member from the team
 export const deleteUserTeam = async (userId: string, teamId: string): Promise<DeleteRowResponse> => {
   const { error } = await supabase
     .from('user_team')
@@ -411,7 +508,7 @@ export const deleteUserTeam = async (userId: string, teamId: string): Promise<De
 
 // main function to use when you create a new team (automatically adds the user to the new team)
 export const createTeamAndAddUser = async (teamName: string): Promise<{ success: boolean; error: string | null; teamId: string | null }> => {
-  try {
+  
     const userId = await getCurrentUserId();
     if (!userId) {
       return { success: false, error: "No user is currently logged in", teamId: null };
@@ -427,6 +524,7 @@ export const createTeamAndAddUser = async (teamName: string): Promise<{ success:
 
     const { data: newUserTeam, error: userTeamError } = await createUserTeam(userId, newTeam.team_id, UserTeamRole.admin);
     if (userTeamError) {
+
       // If adding the user fails, delete the created team
       await deleteTeam(newTeam.team_id);
       return { success: false, error: userTeamError.message, teamId: null };
@@ -438,12 +536,20 @@ export const createTeamAndAddUser = async (teamName: string): Promise<{ success:
     }
 
     return { success: true, error: null, teamId: newTeam.team_id };
-  } catch (err) {
-    return { 
-      success: false, 
-      error: err instanceof Error ? err.message : "An unexpected error occurred", 
-      teamId: null 
-    };
-  }
+
 }
+
+
+
+export const fetchAllUserTeamForTeam = async (teamId: string): Promise<UserTeamMultiResponse> => {
+  const { data, error } = await supabase
+    .from('user_team')
+    .select()
+    .eq('team_id', teamId)
+    .select()
+  return { data, error }
+}
+
+
+
 
