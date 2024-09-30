@@ -232,10 +232,15 @@ const handleDragEnd = (result: DropResult) => {
 
       const updateTaskSessions = (task: Task) => {
         if (task.id === taskId) {
-          return {
-            ...task,
-            workSessions: [...(task.workSessions || {}), session]
-          };
+          const sessionExists = task.workSessions.some(
+            existingSession => existingSession.id === session.id
+          );
+          if (!sessionExists) {
+            return {
+              ...task,
+              workSessions: [...task.workSessions, session]
+            };
+          }
         }
         return task;
       };
