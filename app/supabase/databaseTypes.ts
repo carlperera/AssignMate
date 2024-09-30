@@ -5,14 +5,13 @@ import {User as AuthUserTemp} from '@supabase/supabase-js';
 
 // ------------------------------------------ DATABASE TABLE TYPES ------------------------------------------
 export type Project = Tables<'project'>;
-export type Sprint = Tables<'sprint'>;
-export type Task = Tables<'task'>;
 export type ProjectTaskStatus = Tables<'project_task_status'>;
+export type Task = Tables<'task'>;
 export type Team = Tables<'team'>;
 export type User = Tables<'user'>;
 export type UserTeam = Tables<'user_team'>;
 export type AuthUser = AuthUserTemp;
-
+export type TaskLog = Tables<'task_log'>;
 // ------------------------------------------ ENUMS ------------------------------------------
 export enum ProjectStatus {
     Doing = "doing",

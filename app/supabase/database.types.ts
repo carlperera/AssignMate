@@ -76,86 +76,44 @@ export type Database = {
           },
         ]
       }
-      sprint: {
-        Row: {
-          created_at: string
-          proj_id: string | null
-          sprint_desc: string | null
-          sprint_id: string
-          sprint_name: string | null
-        }
-        Insert: {
-          created_at?: string
-          proj_id?: string | null
-          sprint_desc?: string | null
-          sprint_id?: string
-          sprint_name?: string | null
-        }
-        Update: {
-          created_at?: string
-          proj_id?: string | null
-          sprint_desc?: string | null
-          sprint_id?: string
-          sprint_name?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "sprint_proj_id_fkey"
-            columns: ["proj_id"]
-            isOneToOne: false
-            referencedRelation: "project"
-            referencedColumns: ["proj_id"]
-          },
-        ]
-      }
       task: {
         Row: {
           blocker_task_ids: string[] | null
           created_at: string
-          parent_task_id: string | null
           proj_id: string | null
-          sprint_id: string | null
-          task_assignee: string | null
+          task_assignee_id: string | null
           task_deadline: string | null
           task_desc: string | null
           task_id: string
           task_priority: Database["public"]["Enums"]["task_priority "] | null
           task_status: string | null
+          task_team_id: string | null
         }
         Insert: {
           blocker_task_ids?: string[] | null
           created_at?: string
-          parent_task_id?: string | null
           proj_id?: string | null
-          sprint_id?: string | null
-          task_assignee?: string | null
+          task_assignee_id?: string | null
           task_deadline?: string | null
           task_desc?: string | null
           task_id?: string
           task_priority?: Database["public"]["Enums"]["task_priority "] | null
           task_status?: string | null
+          task_team_id?: string | null
         }
         Update: {
           blocker_task_ids?: string[] | null
           created_at?: string
-          parent_task_id?: string | null
           proj_id?: string | null
-          sprint_id?: string | null
-          task_assignee?: string | null
+          task_assignee_id?: string | null
           task_deadline?: string | null
           task_desc?: string | null
           task_id?: string
           task_priority?: Database["public"]["Enums"]["task_priority "] | null
           task_status?: string | null
+          task_team_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "task_parent_task_id_fkey"
-            columns: ["parent_task_id"]
-            isOneToOne: false
-            referencedRelation: "task"
-            referencedColumns: ["task_id"]
-          },
           {
             foreignKeyName: "task_proj_id_fkey"
             columns: ["proj_id"]
@@ -164,11 +122,63 @@ export type Database = {
             referencedColumns: ["proj_id"]
           },
           {
-            foreignKeyName: "task_sprint_id_fkey"
-            columns: ["sprint_id"]
+            foreignKeyName: "task_task_assignee_id_task_team_id_fkey"
+            columns: ["task_assignee_id", "task_team_id"]
             isOneToOne: false
-            referencedRelation: "sprint"
-            referencedColumns: ["sprint_id"]
+            referencedRelation: "user_team"
+            referencedColumns: ["user_id", "team_id"]
+          },
+          {
+            foreignKeyName: "task_task_status_fkey"
+            columns: ["task_status"]
+            isOneToOne: false
+            referencedRelation: "project_task_status"
+            referencedColumns: ["project_task_status_id"]
+          },
+        ]
+      }
+      task_log: {
+        Row: {
+          created_at: string
+          task_id: string | null
+          task_log_end: string | null
+          task_log_id: string
+          task_log_start: string | null
+          task_log_team: string | null
+          task_log_user: string | null
+        }
+        Insert: {
+          created_at?: string
+          task_id?: string | null
+          task_log_end?: string | null
+          task_log_id?: string
+          task_log_start?: string | null
+          task_log_team?: string | null
+          task_log_user?: string | null
+        }
+        Update: {
+          created_at?: string
+          task_id?: string | null
+          task_log_end?: string | null
+          task_log_id?: string
+          task_log_start?: string | null
+          task_log_team?: string | null
+          task_log_user?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_log_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "task"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "task_log_task_log_user_task_log_team_fkey"
+            columns: ["task_log_user", "task_log_team"]
+            isOneToOne: false
+            referencedRelation: "user_team"
+            referencedColumns: ["user_id", "team_id"]
           },
         ]
       }

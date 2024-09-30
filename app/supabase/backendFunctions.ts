@@ -2,9 +2,10 @@ import { createClient } from '@supabase/supabase-js'
 import { PostgrestError } from '@supabase/supabase-js';;
 import { Database } from '../../app/supabase/database.types'
 import { 
-  Project, Sprint, Task, Team, User, UserTeam,
+  Project, Task, Team, User, UserTeam,
   ProjectStatus, UserTeamRole,
   AddUserNameToTeam,
+  TaskLog,
 } from './databaseTypes'
 import { 
   FetchUserIdResponse,
@@ -13,8 +14,6 @@ import {
   DeleteRowResponse,
   ProjectMultiResponse,
   ProjectSingleResponse,
-  SprintMultiResponse,
-  SprintSingleResponse,
   TaskMultiResponse,
   TaskSingleResponse,
   ProjectTaskStatusMultiResponse,
@@ -27,6 +26,8 @@ import {
   UserTeamSingleResponse,
   FetchUserResponse,
   CheckTeamMemberResponse,
+  TaskLogSingleResponse,
+  TaskLogMultiResponse,
 } from './databaseResponseTypes'
 
 import supabase from "./supabaseClient";
@@ -43,12 +44,6 @@ export const getCurrentAuthUser = async (): Promise<FetchUserResponse> => {
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ (STORAGE) +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-/* storage is used to store any images 
-1. user profile pictures
-2. any other media relevant to a team - could be the team picture or the project picture
-*/
 
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ (DATABASE) +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -120,72 +115,24 @@ export const deleteProject = async (projId: string): Promise<DeleteRowResponse> 
   return error
 }
 
-// ---------------------------------------------------------------- SPRINT ----------------------------------------------------------------
-// SPRINT functions
-export const createSprint = async (sprintName: string, projId: string): Promise<SprintSingleResponse> => {
-  const { data, error } = await supabase
-    .from('sprint')
-    .insert({ sprint_name: sprintName, proj_id: projId })
-  return { data, error }
-}
-
-export const fetchSprintById = async (sprintId: string): Promise<SprintSingleResponse> => {
-  const { data, error } = await supabase
-    .from('sprint')
-    .select()
-    .eq('sprint_id', sprintId)
-    .select()
-    .single()
-  return { data, error }
-}
-
-export const updateSprintDesc = async (sprintId: string, newSprintDesc: string | null): Promise<SprintSingleResponse> => {
-  const { data, error } = await supabase
-    .from('sprint')
-    .update({ sprint_desc: newSprintDesc })
-    .eq('sprint_id', sprintId)
-    .select()
-    .single()
-  return { data, error }
-}
-
-export const updateSprintName = async (sprintId: string, newSprintName: string): Promise<SprintSingleResponse> => {
-  const { data, error } = await supabase
-    .from('sprint')
-    .update({ sprint_name: newSprintName })
-    .eq('sprint_id', sprintId)
-    .select()
-    .single()
-  return { data, error }
-}
-
-export const deleteSprint = async (sprintId: string): Promise<DeleteRowResponse> => {
-  const { error } = await supabase
-    .from('sprint')
-    .delete()
-    .eq('sprint_id', sprintId)
-  return error
-}
 
 // ---------------------------------------------------------------- TASK ----------------------------------------------------------------
 // TASK functions
 export const createTask = async (
-  taskAssignee: string, 
+  taskAssignee: string | null, 
   taskDesc: string, 
-  taskDeadline: string, 
+  taskDeadline: string | null, 
   projId: string,
-  parentTaskId?: string, 
   taskPriority?: Database['public']['Enums']['task_priority '],
   taskStatusId?: string
 ): Promise<CreateRowResponse> => {
   const { error } = await supabase
     .from('task')
     .insert({
-      task_assignee: taskAssignee, 
+      task_assignee_id: taskAssignee, 
       task_desc: taskDesc, 
       task_deadline: taskDeadline,
       proj_id: projId,
-      parent_task_id: parentTaskId,
       task_priority: taskPriority,
       task_status: taskStatusId
     })
@@ -211,20 +158,20 @@ export const fetchTasksForProject = async (projId: string): Promise<TaskMultiRes
   return { data, error }
 }
 
-export const fetchTasksForProjectMember = async (projId: string, teamMemberId: string): Promise<TaskMultiResponse> => {
+export const fetchTasksForProjectMember = async (projId: string, taskAssigneeId: string): Promise<TaskMultiResponse> => {
   const { data, error } = await supabase
     .from('task')
     .select()
     .eq('proj_id', projId)
-    .eq('task_assignee', teamMemberId)
+    .eq('task_assignee_id', taskAssigneeId)
     .select()
   return { data, error }
 }
 
-export const updateTaskAssignee = async (taskId: string, newTeamMemberId: string): Promise<TaskSingleResponse> => {
+export const updateTaskAssignee = async (taskId: string, newAssigneeId: string): Promise<TaskSingleResponse> => {
   const { data, error } = await supabase
     .from('task')
-    .update({ task_assignee: newTeamMemberId })
+    .update({ task_assignee_id: newAssigneeId })
     .eq('task_id', taskId)
     .select()
     .single()
@@ -256,10 +203,21 @@ export const fetchProjectTaskStatusById = async (taskStatusId: string): Promise<
       .from('project_task_status')
       .select()
       .eq('id', taskStatusId)
+      .order('proj_status_order', { ascending: true})
       .select()
       .single()
     return { data, error }
-  }
+}
+
+export const fetchAllTaskStatusForProject = async (projectId: string): Promise<ProjectTaskStatusMultiResponse> => {
+  const { data, error } = await supabase
+    .from('project_task_status')
+    .select()
+    .eq('proj_id', projectId)
+    .order('proj_status_order', { ascending: true})
+    .select()
+  return { data, error }
+}
 
 export const createProjectTaskStatus = async (projectId: string, newStatusName: string): Promise<ProjectTaskStatusSingleResponse> => {
   const { data, error } = await supabase
@@ -279,6 +237,7 @@ export const updateTaskStatusName = async (taskStatusId: string, newTaskStatusNa
     return { data, error }
 }
 
+//if you update this task status, then you have to update all the ones that were previously left and right of it 
 export const updateTaskStatusOrder = async (taskStatusId: string, newTaskStatusName: string): Promise<ProjectTaskStatusMultiResponse> => {
   const { data, error } = await supabase
     .from('project_task_status')
@@ -570,5 +529,33 @@ export const fetchAllUserTeamForTeam = async (teamId: string): Promise<UserTeamM
 }
 
 
+// ---------------------------------------------------------------- TASK LOG ----------------------------------------------------------------
+export const createTaskLog = async (taskId: string, taskLogStart: Date, taskLogEnd: Date, taskLogUserId: string, taskLogTeam: string): Promise<TaskLogSingleResponse> => {
+  const { data, error } = await supabase
+    .from('task_log')
+    .insert({task_id: taskId, task_log_start: taskLogStart.toISOString(), task_log_end: taskLogEnd.toISOString(), task_log_user: taskLogUserId, task_log_team: taskLogTeam})
+    .select()
+    .single()
+  return { data, error }
+}
 
 
+export const fetchAllTaskLogsForTask = async (taskId: string): Promise<TaskLogMultiResponse> => {
+  const { data, error } = await supabase
+    .from('task_log')
+    .select()
+    .eq('task_id', taskId)
+    .select()
+  return { data, error }
+}
+
+
+export const fetchTaskLogsForTaskUser = async (taskId: string, userId: string): Promise<TaskLogMultiResponse> => {
+  const { data, error } = await supabase
+    .from('task_log')
+    .select()
+    .eq('task_id', taskId)
+    .eq('task_log_user', userId)
+    .select()
+  return { data, error }
+}

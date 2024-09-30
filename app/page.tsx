@@ -62,7 +62,7 @@ export default function AuthPage() {
             setSuccess(true);
             // Delay redirect to show success message
             setTimeout(() => {
-                router.push('/dashboard-page/');
+                router.push('/projects-page/');
             }, 1500);
 
         } catch (err) {
