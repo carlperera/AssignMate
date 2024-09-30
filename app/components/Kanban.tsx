@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { BoardData, Column, Task, TeamMember } from './ClientKanbanWrapper';
-import { Plus, Calendar, Edit2 } from 'lucide-react';
+import { Plus, Calendar, Edit2, Clock } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Link from 'next/link';
 import Header from './Header';
 import Head from 'next/head';
+import { TaskLoggingModal } from './TaskLoggingModal';
 
 
 interface KanbanProps {
@@ -20,6 +21,7 @@ interface KanbanProps {
   onAddNewColumn: () => void;
   onSortChange: (option: 'none' | 'dueDate') => void;
   currentSort: 'none' | 'dueDate';
+  onLogWorkSession: (columnId: string, taskId: string, session: WorkSession) => void;
 }
 
 export const KanbanBoard: React.FC<KanbanProps> = ({
@@ -30,10 +32,12 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
   onDeleteTask,
   onAddNewColumn,
   onSortChange,
-  currentSort 
+  currentSort,
+  onLogWorkSession
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isLoggingModalOpen, setIsLoggingModalOpen] = useState(false);
   const [newTaskColumn, setNewTaskColumn] = useState('');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingColumn, setEditingColumn] = useState('');
@@ -90,6 +94,18 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
     }
   };
 
+  const handleOpenLoggingModal = (columnId: string, task: Task) => {
+    setEditingColumn(columnId);
+    setEditingTask(task);
+    setIsLoggingModalOpen(true);
+  }
+
+  const handleLogWorkSession = (taskId: string, session: WorkSession) => {
+    if (editingColumn && editingTask) {
+      onLogWorkSession(editingColumn, editingTask.id, session);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -128,6 +144,12 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
             className="absolute top-1 right-6 text-blue-500 hover:text-blue-700"
           >
             <Edit2 size={14} />
+          </button>
+          <button
+            onClick={() => handleOpenLoggingModal(columnId, task)}
+            className="absolute top-1 right-10 text-green-500 hover:text-green-700"
+          >
+            <Clock size={14} />
           </button>
           <button
             onClick={() => onDeleteTask(columnId, task.id)}
@@ -271,6 +293,16 @@ return (
         taskDueDate={taskDueDate}
         setTaskDueDate={setTaskDueDate}
       />
+      {editingTask && (
+        <TaskLoggingModal
+          isOpen={isLoggingModalOpen}
+          onClose={() => setIsLoggingModalOpen(false)}
+          taskId={editingTask.id}
+          taskTitle={editingTask.title}
+          onLogSession={handleLogWorkSession}
+          workSessions={editingTask.workSessions || []}
+        />
+      )}
     </div>
   );
 };

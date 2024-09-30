@@ -7,6 +7,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+export interface WorkSession {
+  id: string;
+  startTime: Date;
+  endTime: Date;
+  duration: number; // in seconds
+}
 
 export interface Task {
   id: string;
@@ -14,6 +20,7 @@ export interface Task {
   tag?: string;
   assignee: string | null;
   dueDate?: string;
+  workSessions: WorkSession[];
 }
 
 export interface TeamMember {
@@ -218,6 +225,33 @@ const handleDragEnd = (result: DropResult) => {
     return acc;
   }, {} as BoardData);
 
+  const logWorkSession = (columnId: string, taskId: string, session: WorkSession) => {
+    setBoardData(prevData => {
+      const newData = { ...prevData };
+      const column = newData[columnId];
+
+      const updateTaskSessions = (task: Task) => {
+        if (task.id === taskId) {
+          return {
+            ...task,
+            workSessions: [...(task.workSessions || {}), session]
+          };
+        }
+        return task;
+      };
+
+      // Update unassigned tasks
+      column.unassignedTasks = column.unassignedTasks.map(updateTaskSessions);
+
+      // Update team member tasks
+      column.teamMembers = column.teamMembers.map(member => ({
+        ...member,
+        tasks: member.tasks.map(updateTaskSessions)
+      }));
+
+      return newData;
+    });
+  };
 
 return (
     <>
@@ -230,6 +264,7 @@ return (
         onAddNewColumn={handleAddNewColumnClick}
         onSortChange={setSortOption}
         currentSort={sortOption}
+        onLogWorkSession={logWorkSession}
 
       />
       <Dialog open={isAddColumnDialogOpen} onOpenChange={setIsAddColumnDialogOpen}>
