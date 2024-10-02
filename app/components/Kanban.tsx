@@ -1,13 +1,14 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { ProjectTaskStatus, Task, User } from '@/supabase/databaseTypes';
-import { Plus, Calendar, Edit2, X, Loader, Trash2} from 'lucide-react';
+import { ProjectTaskStatus, Task, User, TaskLog } from '@/supabase/databaseTypes';
+import { Plus, Calendar, Edit2, X, Loader, Trash2, Clock } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Header from './Header';
+import { createTaskLog, fetchAllTaskLogsForTask, fetchTaskLogsForTaskUser, getCurrentAuthUser, getCurrentUserId } from '@/supabase/backendFunctions';
 
 interface KanbanProps {
   columns: ProjectTaskStatus[];
@@ -30,10 +31,11 @@ interface TaskCardProps {
   columnId: string;
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
+  onLogTime: (taskId: string) => void;
 }
 
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, index, columnId, onEditTask, onDeleteTask }) => (
+const TaskCard: React.FC<TaskCardProps> = ({ task, index, columnId, onEditTask, onDeleteTask, onLogTime }) => (
   <Draggable 
     key={task.task_id} 
     draggableId={`${task.task_id}|${columnId}|${task.task_assignee_id || 'unassigned'}|${task.task_team_id || 'noteam'}`} 
@@ -56,9 +58,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index, columnId, onEditTask, 
         )}
         <button
           onClick={() => onEditTask(task)}
-          className="absolute top-1 right-6 text-blue-500 hover:text-blue-700"
+          className="absolute top-1 right-12 text-blue-500 hover:text-blue-700"
         >
           <Edit2 size={14} />
+        </button>
+        <button
+          onClick={() => onLogTime(task.task_id)}
+          className="absolute top-1 right-6 text-green-500 hover:text-green-700"
+        >
+          <Clock size={14} />
         </button>
         <button
           onClick={() => onDeleteTask(task.task_id)}
@@ -101,6 +109,26 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
   });
 
   const [isAddingColumn, setIsAddingColumn] = useState(false);
+  const [currentSession, setCurrentSession] = useState<Date | null>(null);
+
+
+  const [isLoggingTime, setIsLoggingTime] = useState(false);
+  const [loggingTaskId, setLoggingTaskId] = useState<string | null>(null);
+  const [loggingStartTime, setLoggingStartTime] = useState<Date | null>(null);
+  const [taskLogs, setTaskLogs] = useState<TaskLog[]>([]);
+
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCurrentUserId = async () => {
+      const userId = await getCurrentUserId();
+      setCurrentUserId(userId);
+    };
+
+    fetchCurrentUserId();
+  }, []);
+
+  //  setCurrentUserId(getCurrentUserId())
 
 
 
@@ -180,6 +208,89 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
     onDragEnd(result);
   };
 
+  const handleLogTime = (taskId: string) => {
+    setLoggingTaskId(taskId);
+    if (isLoggingTime) {
+      // Stop logging time
+      const endTime = new Date();
+      if (loggingStartTime) {
+        console.log(taskId)
+        console.log(loggingStartTime)
+        console.log(endTime)
+        createTaskLog(taskId, loggingStartTime, endTime, currentUserId!, teamId)
+          .then(() => {
+            setIsLoggingTime(false);
+            setLoggingStartTime(null);
+            fetchTaskLogs(taskId);
+          })
+          .catch((error) => {
+            console.error('Error logging time:', error);
+          });
+      }
+    } else {
+      // Start logging time
+      setIsLoggingTime(true);
+      setLoggingStartTime(new Date());
+    }
+  };
+
+  const fetchTaskLogs = async (taskId: string) => {
+    try {
+      const { data: logs, error } = await fetchAllTaskLogsForTask(taskId);
+      if (error) throw error;
+      setTaskLogs(logs || []);
+    } catch (error) {
+      console.error('Error fetching task logs:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (editingTask) {
+      fetchTaskLogs(editingTask.task_id);
+    }
+  }, [editingTask]);
+  
+
+  const renderTaskLogs = () => {
+    if (!taskLogs.length) return <p>No time logged for this task.</p>;
+
+    const logsByUser: { [userId: string]: TaskLog[] } = {};
+    taskLogs.forEach(log => {
+      if (!logsByUser[log.task_log_user || '']) {
+        logsByUser[log.task_log_user || ''] = [];
+      }
+      logsByUser[log.task_log_user || ''].push(log);
+    });
+
+    return Object.entries(logsByUser).map(([userId, logs]) => {
+      const totalTime = logs.reduce((total, log) => {
+        const start = new Date(log.task_log_start || '');
+        const end = new Date(log.task_log_end || '');
+        return total + (end.getTime() - start.getTime());
+      }, 0);
+
+      const user = teamMembers.find(member => member.user_id === userId);
+      const userName = user ? `${user.user_fname} ${user.user_lname}` : 'Unknown User';
+
+      return (
+        <div key={userId} className="mb-4">
+          <h5 className="font-semibold">{userName}</h5>
+          <p>Total time: {Math.round(totalTime / 60000)} minutes</p>
+          <ul>
+            {logs.map(log => (
+              <li key={log.task_log_id}>
+                {new Date(log.task_log_start || '').toLocaleString()} - {new Date(log.task_log_end || '').toLocaleString()}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    });
+  };
+
+
+
+
 
 
   return (
@@ -222,6 +333,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                                           columnId={column.project_task_status_id}
                                           onEditTask={handleEditTask}
                                           onDeleteTask={onDeleteTask}
+                                          onLogTime={handleLogTime}
                                         />
                                       ))}
                                     {provided.placeholder}
@@ -245,6 +357,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                                         columnId={column.project_task_status_id}
                                         onEditTask={handleEditTask}
                                         onDeleteTask={onDeleteTask}
+                                        onLogTime={handleLogTime}
                                       />
                                     ))}
                                   {provided.placeholder}
@@ -362,6 +475,14 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                 </SelectContent>
               </Select>
             </div>
+            {editingTask && (
+              <div>
+                <h4 className="font-semibold mt-4 mb-2">Time Logged:</h4>
+                <div className="max-h-40 overflow-y-auto">
+                  {renderTaskLogs()}
+                </div>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button onClick={handleTaskSubmit}>
@@ -370,6 +491,14 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {isLoggingTime && loggingTaskId && (
+        <div className="fixed bottom-4 right-4 bg-blue-500 text-white p-4 rounded-lg shadow-lg">
+          <p>Logging time for task...</p>
+          <Button onClick={() => handleLogTime(loggingTaskId)} variant="secondary" className="mt-2">
+            Stop Logging
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -205,6 +205,37 @@ const [sortOption, setSortOption] = useState<'none' | 'dueDate'>('none');
         // Optionally, revert the UI change or show an error message to the user
       }
     } else {
+      // const [taskId, sourceColumnId, sourceUserId, sourceTeamId] = draggableId.split('|');
+      // const [destColumnId, destUserId, destTeamId] = destination.droppableId.split('|');
+
+     
+  
+      // if (sourceColumnId === destColumnId && sourceUserId === destUserId) {
+      //   return; // Task hasn't moved, no need to update
+      // }
+
+      // const updatedTask: Partial<Task> = {
+      //   task_status: destColumnId,
+      //   task_assignee_id: destUserId === 'unassigned' ? null : destUserId,
+      //   task_team_id: sourceTeamId === 'unassigned' ? null : sourceTeamId, // Assuming team doesn't change
+      // };
+
+      // try {
+      //   console.log('Updating task:', taskId, 'with:', updatedTask);
+      //   console.log(updatedTask)
+      //   const { data: updatedTaskData, error } = await editTask(taskId, updatedTask);
+
+      //   if (error) {
+      //     throw error;
+      //   }
+
+      //   if (updatedTaskData) {
+      //     console.log('Task updated successfully:', updatedTaskData);
+      //     // The subscription should handle updating the local state
+      //   }
+      // } catch (error) {
+      //   console.error('Error updating task:', error);
+      // }
       const [taskId, sourceColumnId, sourceUserId, sourceTeamId] = draggableId.split('|');
       const [destColumnId, destUserId, destTeamId] = destination.droppableId.split('|');
 
