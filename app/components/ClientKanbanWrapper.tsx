@@ -10,15 +10,19 @@ import {
   deleteTask,
   createProjectTaskStatus,
   updateTaskStatusOrder,
-  fetchProjectById
+  fetchProjectById,
+  editTask,
+  fetchUserTeam
 } from '@/supabase/backendFunctions';
 import supabase from '@/supabase/supabaseClient';
+
 
 interface ClientKanbanWrapperProps {
   initialColumns: ProjectTaskStatus[];
   initialTasks: Task[];
   teamMembers: User[];
   projectId: string;
+  teamId: string;
 }
 
 export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({
@@ -26,12 +30,14 @@ export const ClientKanbanWrapper: React.FC<ClientKanbanWrapperProps> = ({
   initialTasks,
   teamMembers,
   projectId,
+  teamId,
 }) => {
   const [columns, setColumns] = useState<ProjectTaskStatus[]>(initialColumns);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [members, setMembers] = useState<User[]>(teamMembers);
   const [newColumnTitle, setNewColumnTitle] = useState('');
   const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
+
 
 
 
@@ -172,7 +178,7 @@ const [sortOption, setSortOption] = useState<'none' | 'dueDate'>('none');
     }
   };
   const handleDragEnd = async (result: DropResult) => {
-    const { source, destination, type } = result;
+    const { source, destination, type, draggableId } = result;
 
     if (!destination) return;
 
@@ -183,42 +189,81 @@ const [sortOption, setSortOption] = useState<'none' | 'dueDate'>('none');
 
       const updatedColumns = newColumns.map((column, index) => ({
         ...column,
-        proj_status_order: index + 1, // Adding 1 because array indices start at 0, but we want orders to start at 1
+        proj_status_order: index + 1,
       }));
 
       setColumns(updatedColumns);
 
       // Update the database
       try {
-        await updateColumnOrder(updatedColumns);
+        const updatePromises = updatedColumns.map(column => 
+          updateTaskStatusOrder(column.project_task_status_id, column.proj_status_order)
+        );
+        await Promise.all(updatePromises);
       } catch (error) {
         console.error('Error updating column order:', error);
         // Optionally, revert the UI change or show an error message to the user
       }
     } else {
-      // Handling task moves (existing code)
-      const sourceColumn = columns.find(col => col.project_task_status_id === source.droppableId.split('-')[0]);
-      const destColumn = columns.find(col => col.project_task_status_id === destination.droppableId.split('-')[0]);
+      const [taskId, sourceColumnId, sourceUserId, sourceTeamId] = draggableId.split('|');
+      const [destColumnId, destUserId, destTeamId] = destination.droppableId.split('|');
 
-      if (!sourceColumn || !destColumn) return;
+      if (sourceColumnId === destColumnId && sourceUserId === destUserId) {
+        return; // Task hasn't moved, no need to update
+      }
 
-      const newTasks = Array.from(tasks);
-      const [movedTask] = newTasks.splice(source.index, 1);
-      newTasks.splice(destination.index, 0, {
-        ...movedTask,
-        task_status: destColumn.project_task_status_id,
-        task_assignee_id: destination.droppableId.split('-')[1] === 'unassigned' ? null : destination.droppableId.split('-')[1],
-      });
+      const isMovedToUnassigned = destUserId === 'unassigned';
 
-      // Update the database
+      // Optimistic update
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.task_id === taskId
+            ? {
+                ...task,
+                task_status: destColumnId,
+                task_assignee_id: isMovedToUnassigned ? null : (destUserId === 'unassigned' ? null : destUserId),
+                task_team_id: isMovedToUnassigned ? null : (destTeamId === 'unassigned' ? null : destTeamId),
+              }
+            : task
+        )
+      );
+
+      const updatedTask: Partial<Task> = {
+        task_status: destColumnId,
+        task_assignee_id: isMovedToUnassigned ? null : (destUserId === 'unassigned' ? null : destUserId),
+        task_team_id: isMovedToUnassigned ? null : (destTeamId === 'unassigned' ? null : destTeamId),
+      };
+
       try {
-        await updateTaskStatus(movedTask.task_id, destColumn.project_task_status_id);
-        await updateTaskAssignee(movedTask.task_id, newTasks[destination.index].task_assignee_id || null);
-        setTasks(newTasks);
+        console.log('Updating task:', taskId, 'with:', updatedTask);
+        const { data: updatedTaskData, error } = await editTask(taskId, updatedTask);
+
+        if (error) {
+          throw error;
+        }
+
+        if (updatedTaskData) {
+          console.log('Task updated successfully:', updatedTaskData);
+          // The subscription will handle syncing the local state if there are any discrepancies
+        }
       } catch (error) {
         console.error('Error updating task:', error);
-        // Optionally, revert the UI change or show an error message to the user
+        // Revert the optimistic update if there's an error
+        setTasks(prevTasks => 
+          prevTasks.map(task => 
+            task.task_id === taskId
+              ? {
+                  ...task,
+                  task_status: sourceColumnId,
+                  task_assignee_id: sourceUserId === 'unassigned' ? null : sourceUserId,
+                  task_team_id: sourceTeamId === 'unassigned' ? null : sourceTeamId,
+                }
+              : task
+          )
+        );
+        // Optionally, show an error message to the user
       }
+
     }
   };
 
@@ -261,22 +306,7 @@ const [sortOption, setSortOption] = useState<'none' | 'dueDate'>('none');
       console.error('Error creating task:', error);
     }
   };
-  
-  const editTask = async (taskId: string, updatedTask: Partial<Task>) => {
-    const newTasks = tasks.map(task =>
-      task.task_id === taskId ? { ...task, ...updatedTask } : task
-    );
-  
-    // Update the database
-    if (updatedTask.task_status) {
-      await updateTaskStatus(taskId, updatedTask.task_status);
-    }
-    if (updatedTask.task_assignee_id !== undefined) {
-      await updateTaskAssignee(taskId, updatedTask.task_assignee_id);
-    }
-  
-    setTasks(newTasks);
-  };
+
 
   
   
@@ -329,6 +359,7 @@ const [sortOption, setSortOption] = useState<'none' | 'dueDate'>('none');
         onSortChange={setSortOption}
         currentSort={sortOption}
         projectId={projectId}
+        teamId={teamId}
       />
     </>
   );

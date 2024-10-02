@@ -16,14 +16,18 @@ export default function BoardTabPage({ params }: { params: { projectId: string }
   const [tasks, setTasks] = useState<Task[]>([]);
   const [teamMembers, setTeamMembers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [team, setTeam] = useState('');
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch project
         const { data: projectData } = await fetchProjectById(params.projectId);
-        if (projectData) setProject(projectData);
-
+        if (projectData) {
+          setProject(projectData);
+          setTeam(projectData.team_id)
+        }
         // Fetch columns (project task status)
         const { data: columnsData } = await fetchAllTaskStatusForProject(params.projectId);
         if (columnsData) setColumns(columnsData.sort((a, b) => a.proj_status_order - b.proj_status_order));
@@ -66,6 +70,7 @@ export default function BoardTabPage({ params }: { params: { projectId: string }
         initialColumns={columns}
         initialTasks={tasks}
         teamMembers={teamMembers}
+        teamId={team}
       />
     </div>
   );

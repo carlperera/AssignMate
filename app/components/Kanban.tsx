@@ -21,17 +21,24 @@ interface KanbanProps {
   onSortChange: (option: 'none' | 'dueDate') => void;
   currentSort: 'none' | 'dueDate';
   projectId: string;
+  teamId: string;
 }
 
 interface TaskCardProps {
   task: Task;
   index: number;
+  columnId: string;
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, index, onEditTask, onDeleteTask }) => (
-  <Draggable key={task.task_id} draggableId={task.task_id} index={index}>
+
+const TaskCard: React.FC<TaskCardProps> = ({ task, index, columnId, onEditTask, onDeleteTask }) => (
+  <Draggable 
+    key={task.task_id} 
+    draggableId={`${task.task_id}|${columnId}|${task.task_assignee_id || 'unassigned'}|${task.task_team_id || 'noteam'}`} 
+    index={index}
+  >
     {(provided) => (
       <div
         ref={provided.innerRef}
@@ -76,7 +83,8 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
   onAddNewColumn,
   onSortChange,
   currentSort,
-  projectId
+  projectId,
+  teamId,
 }) => {
   const [newColumnName, setNewColumnName] = useState('');
   const [newColumnError, setNewColumnError] = useState('');
@@ -178,7 +186,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
     <div className="flex flex-col h-screen">
       <Header />
       <div className="flex-grow flex overflow-x-auto">
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="board" direction="horizontal" type="COLUMN">
             {(provided) => (
               <div
@@ -201,7 +209,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                           {teamMembers.map((member) => (
                             <div key={member.user_id} className="mb-4">
                               <h4 className="font-semibold mb-2">{member.user_fname} {member.user_lname}</h4>
-                              <Droppable droppableId={`${column.project_task_status_id}-${member.user_id}`} type="TASK">
+                              <Droppable droppableId={`${column.project_task_status_id}|${member.user_id}|${teamId}`} type="TASK">
                                 {(provided) => (
                                   <div {...provided.droppableProps} ref={provided.innerRef} className="min-h-[50px]">
                                     {tasks
@@ -211,6 +219,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                                           key={task.task_id}
                                           task={task}
                                           index={index}
+                                          columnId={column.project_task_status_id}
                                           onEditTask={handleEditTask}
                                           onDeleteTask={onDeleteTask}
                                         />
@@ -223,7 +232,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                           ))}
                           <div className="mb-4">
                             <h4 className="font-semibold mb-2">Unassigned</h4>
-                            <Droppable droppableId={`${column.project_task_status_id}-unassigned`} type="TASK">
+                            <Droppable droppableId={`${column.project_task_status_id}|unassigned|noteam`} type="TASK">
                               {(provided) => (
                                 <div {...provided.droppableProps} ref={provided.innerRef} className="min-h-[50px]">
                                   {tasks
@@ -233,6 +242,7 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                                         key={task.task_id}
                                         task={task}
                                         index={index}
+                                        columnId={column.project_task_status_id}
                                         onEditTask={handleEditTask}
                                         onDeleteTask={onDeleteTask}
                                       />
@@ -334,8 +344,6 @@ export const KanbanBoard: React.FC<KanbanProps> = ({
                 </SelectContent>
               </Select>
             </div>
-
-            
             <div>
               <label className="block text-sm font-medium text-gray-700">Priority</label>
               <Select
