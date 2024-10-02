@@ -6,6 +6,7 @@ import {
   ProjectStatus, UserTeamRole,
   AddUserNameToTeam,
   TaskLog,
+  ProjectTaskStatus,
 } from './databaseTypes'
 import { 
   FetchUserIdResponse,
@@ -119,25 +120,36 @@ export const deleteProject = async (projId: string): Promise<DeleteRowResponse> 
 // ---------------------------------------------------------------- TASK ----------------------------------------------------------------
 // TASK functions
 export const createTask = async (
-  taskAssignee: string | null, 
-  taskDesc: string, 
-  taskDeadline: string | null, 
+  taskName: string,
+  taskDesc: string,
   projId: string,
-  taskPriority?: Database['public']['Enums']['task_priority '],
-  taskStatusId?: string
-): Promise<CreateRowResponse> => {
-  const { error } = await supabase
+  taskStatus: string | null,
+  taskAssigneeId: string | null,
+  taskDeadline: string | null,
+  taskPriority: "low" | "normal" | "high" | "critical" | null,
+  taskTeamId: string | null
+): Promise<TaskSingleResponse> => {
+  const { data, error } = await supabase
     .from('task')
     .insert({
-      task_assignee_id: taskAssignee, 
-      task_desc: taskDesc, 
-      task_deadline: taskDeadline,
+      task_name: taskName,
+      task_desc: taskDesc,
       proj_id: projId,
+      task_status: taskStatus,
+      task_assignee_id: taskAssigneeId,
+      task_deadline: taskDeadline,
       task_priority: taskPriority,
-      task_status: taskStatusId
+      task_team_id: taskTeamId
     })
-  return error
-}
+    .select()
+    .single();
+
+  return { data, error };
+};
+
+
+
+
 
 export const fetchTaskById = async (taskId: string): Promise<TaskSingleResponse> => {
   const { data, error } = await supabase
@@ -168,7 +180,7 @@ export const fetchTasksForProjectMember = async (projId: string, taskAssigneeId:
   return { data, error }
 }
 
-export const updateTaskAssignee = async (taskId: string, newAssigneeId: string): Promise<TaskSingleResponse> => {
+export const updateTaskAssignee = async (taskId: string, newAssigneeId: string | null): Promise<TaskSingleResponse> => {
   const { data, error } = await supabase
     .from('task')
     .update({ task_assignee_id: newAssigneeId })
@@ -182,6 +194,16 @@ export const updateTaskStatus = async (taskId: string, newTaskStatusId: string):
   const { data, error } = await supabase
     .from('task')
     .update({ task_status: newTaskStatusId })
+    .eq('task_id', taskId)
+    .select()
+    .single()
+  return { data, error }
+}
+
+export const editTask = async (taskId: string, updatedTask: Partial<Task>): Promise<TaskSingleResponse> => {
+  const { data, error } = await supabase
+    .from('task')
+    .update(updatedTask)
     .eq('task_id', taskId)
     .select()
     .single()
@@ -219,14 +241,40 @@ export const fetchAllTaskStatusForProject = async (projectId: string): Promise<P
   return { data, error }
 }
 
+
+
 export const createProjectTaskStatus = async (projectId: string, newStatusName: string): Promise<ProjectTaskStatusSingleResponse> => {
+  // First, get the current maximum proj_status_order for this project
+  const { data: maxOrderData, error: maxOrderError } = await supabase
+    .from('project_task_status')
+    .select('proj_status_order')
+    .eq('proj_id', projectId)
+    .order('proj_status_order', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (maxOrderError) {
+    console.error('Error fetching max order:', maxOrderError);
+    return { data: null, error: maxOrderError };
+  }
+
+  // Calculate the new order (either max + 1, or 0 if no existing statuses)
+  const newOrder = maxOrderData ? maxOrderData.proj_status_order + 1 : 0;
+
+  // Now insert the new status with the calculated order
   const { data, error } = await supabase
     .from('project_task_status')
-    .insert({ proj_id: projectId, proj_status_name: newStatusName })
+    .insert({ 
+      proj_id: projectId, 
+      proj_status_name: newStatusName,
+      proj_status_order: newOrder
+    })
     .select()
-    .single()
-  return { data, error }
-}
+    .single();
+
+  return { data, error };
+};
+
   
 export const updateTaskStatusName = async (taskStatusId: string, newTaskStatusName: string): Promise<ProjectTaskStatusMultiResponse> => {
     const { data, error } = await supabase
@@ -237,13 +285,27 @@ export const updateTaskStatusName = async (taskStatusId: string, newTaskStatusNa
     return { data, error }
 }
 
-//if you update this task status, then you have to update all the ones that were previously left and right of it 
-export const updateTaskStatusOrder = async (taskStatusId: string, newTaskStatusName: string): Promise<ProjectTaskStatusMultiResponse> => {
+
+
+export const updateProjectTaskStatus = async (statusId: number, updateData: ProjectTaskStatus): Promise<ProjectTaskStatusSingleResponse> => {
   const { data, error } = await supabase
     .from('project_task_status')
-    .update({ proj_status_name: newTaskStatusName })
+    .update(updateData)
+    .eq('project_task_status_id', statusId)
+    .select()
+    .single()
+  return { data, error};
+}
+
+
+//if you update this task status, then you have to update all the ones that were previously left and right of it 
+export const updateTaskStatusOrder = async (taskStatusId: string, newTaskStatusOrder: number): Promise<ProjectTaskStatusSingleResponse> => {
+  const { data, error } = await supabase
+    .from('project_task_status')
+    .update({ proj_status_order: newTaskStatusOrder })
     .eq('id', taskStatusId)
     .select()
+    .single()
   return { data, error }
 }
 

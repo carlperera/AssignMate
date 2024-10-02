@@ -46,7 +46,7 @@ export type Database = {
           created_at: string
           proj_id: string | null
           proj_status_desc: string | null
-          proj_status_name: string | null
+          proj_status_name: string
           proj_status_order: number
           project_task_status_id: string
         }
@@ -54,15 +54,15 @@ export type Database = {
           created_at?: string
           proj_id?: string | null
           proj_status_desc?: string | null
-          proj_status_name?: string | null
-          proj_status_order?: number
+          proj_status_name: string
+          proj_status_order: number
           project_task_status_id?: string
         }
         Update: {
           created_at?: string
           proj_id?: string | null
           proj_status_desc?: string | null
-          proj_status_name?: string | null
+          proj_status_name?: string
           proj_status_order?: number
           project_task_status_id?: string
         }
@@ -78,37 +78,37 @@ export type Database = {
       }
       task: {
         Row: {
-          blocker_task_ids: string[] | null
           created_at: string
           proj_id: string | null
           task_assignee_id: string | null
           task_deadline: string | null
-          task_desc: string | null
+          task_desc: string
           task_id: string
+          task_name: string
           task_priority: Database["public"]["Enums"]["task_priority "] | null
           task_status: string | null
           task_team_id: string | null
         }
         Insert: {
-          blocker_task_ids?: string[] | null
           created_at?: string
           proj_id?: string | null
           task_assignee_id?: string | null
           task_deadline?: string | null
-          task_desc?: string | null
+          task_desc: string
           task_id?: string
+          task_name: string
           task_priority?: Database["public"]["Enums"]["task_priority "] | null
           task_status?: string | null
           task_team_id?: string | null
         }
         Update: {
-          blocker_task_ids?: string[] | null
           created_at?: string
           proj_id?: string | null
           task_assignee_id?: string | null
           task_deadline?: string | null
-          task_desc?: string | null
+          task_desc?: string
           task_id?: string
+          task_name?: string
           task_priority?: Database["public"]["Enums"]["task_priority "] | null
           task_status?: string | null
           task_team_id?: string | null
