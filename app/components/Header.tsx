@@ -30,7 +30,7 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className="bg-white w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+        <div className="max-w-7xl mx-auto lg:px-1 flex justify-between items-center py-4">
           <Link href="/projects-page" className="text-purple-600 hover:text-purple-800">
             <h1 className="text-2xl font-bold">AssignMate</h1>
           </Link>
