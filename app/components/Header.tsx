@@ -11,37 +11,28 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
 
-
   const isActive = (path: string): string => {
     return pathname === path ? styles.active : '';
   };
 
   const handleLogout = async () => {
-
-    
     try {
       const { error } = await supabase.auth.signOut()
-
       if (error) {
-      
         return;
       }
-
     } catch (err) {
       console.error('Unexpected error:', err);
     }
     router.push('/');
-    
   };
-
-  
 
   return (
     <header className={styles.header}>
-      <div className="bg-white">
+      <div className="bg-white w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
-          <Link href="/projects-page">
-            <h1 className="text-2xl font-bold text-gray-900">AssignMate</h1>
+          <Link href="/projects-page" className="text-purple-600 hover:text-purple-800">
+            <h1 className="text-2xl font-bold">AssignMate</h1>
           </Link>
           <Button 
             onClick={handleLogout}
